@@ -25,10 +25,10 @@ var config = {
 	funda: {
 		key: '271175433a7c4fe2a45750d385dd9bfd',
 		baseUrls: {
-			search: 'http://funda.kyrandia.nl/feeds/Aanbod.svc',
-			objects: 'http://funda.kyrandia.nl/feeds/Aanbod.svc',
-			autoSuggest: 'http://zb.funda.info/frontend',
-			map: 'http://mt1.funda.nl/maptiledata.ashx'
+			search: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
+			objects: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
+			autoSuggest: '//zb.funda.info/frontend/json',
+			map: '//mt1.funda.nl/maptiledata.ashx/json'
 		}
 	},
 	google: {
@@ -92,9 +92,47 @@ var App = function () {
 				}
 			});
 		}
+
+		// fetchRequest(url) {
+		// 	return new Promise((resolve, reject) => {
+		// 		fetch(url).then(response => {
+		// 			// Examine the text in the response
+		// 			if (response.status >= 200 && response.status < 300) {
+		// 				console.log(response);
+		// 				response.json().then(data => {
+		// 					resolve(data);
+		// 				});
+		// 			} else {
+		// 				reject(response);
+		// 			}
+		//
+		// 		})
+		// 		.catch(function(err) {
+		// 			reject(err);
+		// 		});
+		// 	});
+		// }
+
+	}, {
+		key: 'fetchRequest',
+		value: function fetchRequest(url, callback) {
+			fetch(url).then(function (response) {
+				if (response.status !== 200) {
+					console.log('Looks like there was a problem. Status Code: ' + response.status);
+					return;
+				}
+
+				// Examine the text in the response
+				response.json().then(function (data) {
+					callback(data);
+				});
+			}).catch(function (err) {
+				console.log('Fetch Error :-S', err);
+			});
+		}
 	}, {
 		key: 'handleRequest',
-		value: function handleRequest(method, url, xml) {
+		value: function handleRequest(method, url) {
 			return new Promise(function (resolve, reject) {
 				var xhr = new XMLHttpRequest();
 
@@ -102,12 +140,7 @@ var App = function () {
 
 				xhr.onload = function () {
 					if (this.status >= 200 && this.status < 300) {
-						console.log(xhr.responseText);
-						if (xml) {
-							resolve(xhr.responseText);
-						} else {
-							resolve(JSON.parse(xhr.responseText));
-						}
+						resolve(JSON.parse(xhr.responseText));
 					} else {
 						reject({ status: this.status, statusText: xhr.statusText });
 					}
@@ -240,7 +273,7 @@ var View = function () {
 					address = address.results[0];
 					address = _this.buildAddress(address.address_components);
 					// Get the houses matching the address
-					_this.app.handleRequest('GET', _this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + address + '&page=1&pagesize=25', true).then(function (houses) {
+					_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + address + '&page=1&pagesize=25', function (houses) {
 						console.log(houses);
 					});
 				});

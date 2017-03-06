@@ -28,10 +28,9 @@ class View {
 				address = address.results[0];
 				address = this.buildAddress(address.address_components);
 				// Get the houses matching the address
-				this.app.handleRequest('GET', `${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, true)
-					.then(houses => {
-						console.log(houses);
-					});
+				this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
+					console.log(houses);
+				});
 			});
 		})
 			.catch(error => {

@@ -26,20 +26,54 @@ class App {
 		});
 	}
 
-	handleRequest(method, url, xml) {
-		return new Promise(function(resolve, reject) {
+	// fetchRequest(url) {
+	// 	return new Promise((resolve, reject) => {
+	// 		fetch(url).then(response => {
+	// 			// Examine the text in the response
+	// 			if (response.status >= 200 && response.status < 300) {
+	// 				console.log(response);
+	// 				response.json().then(data => {
+	// 					resolve(data);
+	// 				});
+	// 			} else {
+	// 				reject(response);
+	// 			}
+	//
+	// 		})
+	// 		.catch(function(err) {
+	// 			reject(err);
+	// 		});
+	// 	});
+	// }
+
+	fetchRequest(url, callback) {
+		fetch(url)
+		.then(response => {
+			if (response.status !== 200) {
+				console.log('Looks like there was a problem. Status Code: ' +
+				response.status);
+				return;
+			}
+
+			// Examine the text in the response
+			response.json().then((data) => {
+				callback(data);
+			});
+		})
+		.catch((err) => {
+			console.log('Fetch Error :-S', err);
+		});
+	}
+
+	handleRequest(method, url) {
+		return new Promise((resolve, reject) => {
 			var xhr = new XMLHttpRequest();
 
 			xhr.open(method, url);
 
 			xhr.onload = function() {
 				if (this.status >= 200 && this.status < 300) {
-					console.log(xhr.responseText);
-					if (xml) {
-						resolve(xhr.responseText);
-					} else {
-						resolve(JSON.parse(xhr.responseText));
-					}
+					resolve(JSON.parse(xhr.responseText));
 				} else {
 					reject({status: this.status, statusText: xhr.statusText});
 				}
