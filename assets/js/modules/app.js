@@ -27,7 +27,6 @@ class App {
 	}
 
 	getAddress(coords) {
-		console.log(coords);
 		return new Promise(function(resolve, reject) {
 			var xhr = new XMLHttpRequest();
 

@@ -95,7 +95,6 @@ var App = function () {
 	}, {
 		key: 'getAddress',
 		value: function getAddress(coords) {
-			console.log(coords);
 			return new Promise(function (resolve, reject) {
 				var xhr = new XMLHttpRequest();
 
@@ -193,7 +192,7 @@ var Store = function () {
 exports.default = Store;
 
 },{}],6:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -213,12 +212,28 @@ var View = function () {
 	}
 
 	_createClass(View, [{
-		key: "render",
+		key: 'buildAddress',
+		value: function buildAddress(components) {
+			components = components.filter(function (component) {
+				return component.types.includes('route') || component.types.includes('locality');
+			});
+
+			components = components.map(function (component) {
+				return component.long_name;
+			});
+
+			return components.reduce(function (buffer, current) {
+				return buffer + ', ' + current;
+			});
+		}
+	}, {
+		key: 'render',
 		value: function render() {
 			var _this = this;
 
 			this.app.getCoords().then(function (coords) {
 				_this.app.getAddress(coords).then(function (address) {
+					address = _this.buildAddress(address.address_components);
 					console.log(address);
 				});
 			}).catch(function (error) {
