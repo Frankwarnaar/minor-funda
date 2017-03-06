@@ -3,6 +3,6 @@
 (() => {
 	'use strict';
 
-	const app = new App(config);
+	const app = new App();
 
-})(App, config);
+})(App, Controller, View, Store, config);

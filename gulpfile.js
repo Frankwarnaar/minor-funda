@@ -14,10 +14,15 @@ const babel     = require('gulp-babel'),
    ============================================================ */
 
 gulp.task('default', ['watch', 'browser-sync']);
+gulp.task('build', ['disable-debug', 'less', 'js', 'images']);
 
 /* ============================================================
 	Configuration
    ============================================================ */
+
+gulp.task('disable-debug', () => {
+	config.debug = false;
+});
 
 const config = {
 	assetsPath: 'assets',
@@ -25,7 +30,11 @@ const config = {
 	debug: true
 };
 
-gulp.task('watch', ['watch:html', 'watch:js', 'watch:less']);
+/* ============================================================
+	Watch
+   ============================================================ */
+
+gulp.task('watch', ['watch:html', 'watch:js', 'watch:less', 'watch:images']);
 
 gulp.task('watch:less', ['less'], () => {
 	return gulp.watch(config.assetsPath + '/styles/**/*.less', ['less']);
@@ -38,6 +47,14 @@ gulp.task('watch:js', ['js'], () => {
 gulp.task('watch:html', () => {
 	return gulp.watch(['*.html']).on('change', browserSync.reload);
 });
+
+gulp.task('watch:images', () => {
+	return gulp.watch([`${config.assetsPatch}/img/*`, `${config.assetsPatch}/img/**/*`], ['images']);
+});
+
+/* ============================================================
+	Error handler
+   ============================================================ */
 
 const handleError = function(err) {
 	gutil.log(err);

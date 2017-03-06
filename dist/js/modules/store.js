@@ -4,23 +4,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*jshint esversion: 6 */
 
-var App = function () {
-	function App() {
-		_classCallCheck(this, App);
+var Store = function () {
+	function Store(app) {
+		_classCallCheck(this, Store);
 
-		this.config = config;
-		this.controller = new Controller(this);
-		this.view = new View(this);
-		this.store = new Store(this);
-		this.init();
+		this.app = app;
 	}
 
-	_createClass(App, [{
-		key: "init",
-		value: function init() {
-			this.controller.init();
+	_createClass(Store, [{
+		key: "getLocation",
+		value: function getLocation() {
+			return new Promise(function (resolve, reject) {
+				if (navigator.geolocation.getCurrentPosition) {
+					navigator.geolocation.getCurrentPosition(function (data) {
+						resolve(data.coords);
+					});
+				} else {
+					reject("Couldn't get the location from your browser");
+				}
+			});
 		}
 	}]);
 
-	return App;
+	return Store;
 }();

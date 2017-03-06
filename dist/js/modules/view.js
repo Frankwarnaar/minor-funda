@@ -4,23 +4,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*jshint esversion: 6 */
 
-var App = function () {
-	function App() {
-		_classCallCheck(this, App);
+var View = function () {
+	function View(app) {
+		_classCallCheck(this, View);
 
-		this.config = config;
-		this.controller = new Controller(this);
-		this.view = new View(this);
-		this.store = new Store(this);
-		this.init();
+		this.app = app;
 	}
 
-	_createClass(App, [{
-		key: "init",
-		value: function init() {
-			this.controller.init();
+	_createClass(View, [{
+		key: 'render',
+		value: function render() {
+			this.app.store.getLocation().then(function (coords) {
+				console.log(coords);
+			}).catch(function (error) {
+				console.log('error');
+			});
 		}
 	}]);
 
-	return App;
+	return View;
 }();

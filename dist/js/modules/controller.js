@@ -4,23 +4,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*jshint esversion: 6 */
 
-var App = function () {
-	function App() {
-		_classCallCheck(this, App);
+var Controller = function () {
+	function Controller(app) {
+		_classCallCheck(this, Controller);
 
-		this.config = config;
-		this.controller = new Controller(this);
-		this.view = new View(this);
-		this.store = new Store(this);
-		this.init();
+		this.app = app;
 	}
 
-	_createClass(App, [{
+	_createClass(Controller, [{
 		key: "init",
 		value: function init() {
-			this.controller.init();
+			this.app.view.render();
 		}
 	}]);
 
-	return App;
+	return Controller;
 }();
