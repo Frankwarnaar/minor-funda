@@ -2,6 +2,7 @@
 
 const babel     = require('gulp-babel'),
 	browserSync = require('browser-sync'),
+	bundler     = require('gulp-es6-module-bundler'),
 	gulp        = require('gulp'),
 	gutil       = require('gulp-util'),
 	image       = require('gulp-image'),
@@ -81,10 +82,13 @@ gulp.task('less', () => {
    ============================================================ */
 
 gulp.task('js', () => {
-	return gulp.src([`${config.assetsPath}/js/*.js`, `${config.assetsPath}/js/**/*.js`])
+	const modules = gulp.src(`${config.assetsPath}/js/**/*.js`);
+
+	return gulp.src([`${config.assetsPath}/js/app.js`])
 		.pipe(plumber({
 			errorHandler: handleError
 		}))
+		.pipe(bundler(modules))
 		.pipe(babel({
 			plugins: ["transform-remove-strict-mode"]
 		}))

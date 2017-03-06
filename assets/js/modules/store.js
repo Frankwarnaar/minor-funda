@@ -9,3 +9,5 @@ class Store {
 		console.log(location);
 	}
 }
+
+export default Store;

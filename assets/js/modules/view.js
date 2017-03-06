@@ -6,7 +6,7 @@ class View {
 	}
 
 	render() {
-		this.app.getLocation()
+		this.app.getCoords()
 			.then(coords => {
 				this.app.store.getAssets(coords);
 			})
@@ -15,3 +15,5 @@ class View {
 			});
 	}
 }
+
+export default View;

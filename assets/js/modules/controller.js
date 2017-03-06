@@ -9,3 +9,5 @@ class Controller {
 		this.app.view.render();
 	}
 }
+
+export default Controller;

@@ -20,6 +20,7 @@
     "browser-sync": "^2.18.7",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
+    "gulp-es6-module-bundler": "^0.1.0",
     "gulp-image": "^2.7.5",
     "gulp-less": "^3.3.0",
     "gulp-plumber": "^1.1.0",
