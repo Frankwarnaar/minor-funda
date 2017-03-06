@@ -1,0 +1,24 @@
+button {
+	font-size: @font-size-md;
+	padding: 0 .5rem;
+
+	height: @btn-height;
+	line-height: @btn-height;
+
+	border: 2px solid transparent;
+	background: @color-primary;
+
+	font-weight: @font-weight-regular;
+	color: @color-lightest;
+	cursor: pointer;
+	transition: @transition-fastest;
+
+	&:hover {
+		background: @color-primary-lighter;
+	}
+
+	&:focus {
+		border: 2px solid @color-darkest;
+		outline: none;
+	}
+}

@@ -1,0 +1,27 @@
+a {
+	color: @color-primary;
+	transition: @transition-fastest;
+	cursor: pointer;
+	border: 2px solid transparent;
+
+	&:hover,
+	&:focus {
+		color: @color-primary-lighter;
+	}
+
+	&:focus {
+		outline: none;
+		border: 2px solid @color-primary;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	span {
+		color: @color-gray-midnight;
+	}
+}

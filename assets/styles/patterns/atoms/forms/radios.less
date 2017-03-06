@@ -1,0 +1,28 @@
+input[type='radio'] {
+	position: absolute;
+	clip: rect(0,0,0,0);
+}
+
+input[type='radio'] + label:before {
+	content: '';
+	margin-right: .5rem;
+	width: 1.325rem;
+	height: 1.325rem;
+
+	display: inline-block;
+	position: relative;
+	top: 2px;
+
+	border: 2px solid @color-primary;
+	border-radius: 50%;
+	background: none;
+	transition: @transition-fastest;
+}
+
+input[type='radio']:checked + label:before {
+	background: @color-primary
+}
+
+input[type='radio']:focus + label:before {
+	border-color: @color-secondary;
+}
