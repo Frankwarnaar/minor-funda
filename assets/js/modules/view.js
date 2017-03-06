@@ -6,12 +6,12 @@ class View {
 	}
 
 	render() {
-		this.app.store.getLocation()
+		this.app.getLocation()
 			.then(coords => {
-				console.log(coords);
+				this.app.store.getAssets(coords);
 			})
 			.catch(error => {
-				console.log('error');
+				console.log(error);
 			});
 	}
 }

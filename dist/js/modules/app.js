@@ -16,7 +16,21 @@ var App = function () {
 	}
 
 	_createClass(App, [{
-		key: "init",
+		key: 'getLocation',
+		value: function getLocation() {
+			console.log('getting location');
+			return new Promise(function (resolve, reject) {
+				if (navigator.geolocation.getCurrentPosition) {
+					navigator.geolocation.getCurrentPosition(function (data) {
+						resolve(data.coords);
+					});
+				} else {
+					reject('Couldn\'t get the location from your browser');
+				}
+			});
+		}
+	}, {
+		key: 'init',
 		value: function init() {
 			this.controller.init();
 		}

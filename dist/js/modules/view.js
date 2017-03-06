@@ -12,12 +12,14 @@ var View = function () {
 	}
 
 	_createClass(View, [{
-		key: 'render',
+		key: "render",
 		value: function render() {
-			this.app.store.getLocation().then(function (coords) {
-				console.log(coords);
+			var _this = this;
+
+			this.app.getLocation().then(function (coords) {
+				_this.app.store.getAssets(coords);
 			}).catch(function (error) {
-				console.log('error');
+				console.log(error);
 			});
 		}
 	}]);
