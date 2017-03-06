@@ -33,7 +33,10 @@ var config = {
 	},
 	google: {
 		key: 'AIzaSyA5emTbr8ytwvzrw9NQW7zlXg1NubeDG5M',
-		baseUrl: 'https://maps.googleapis.com/maps/api/geocode/json'
+		baseUrls: {
+			maps: 'https://maps.googleapis.com/maps/api/geocode/json',
+			roads: 'https://roads.googleapis.com/v1/nearestRoads'
+		}
 	}
 };
 
@@ -92,40 +95,21 @@ var App = function () {
 				}
 			});
 		}
-
-		// fetchRequest(url) {
-		// 	return new Promise((resolve, reject) => {
-		// 		fetch(url).then(response => {
-		// 			// Examine the text in the response
-		// 			if (response.status >= 200 && response.status < 300) {
-		// 				console.log(response);
-		// 				response.json().then(data => {
-		// 					resolve(data);
-		// 				});
-		// 			} else {
-		// 				reject(response);
-		// 			}
-		//
-		// 		})
-		// 		.catch(function(err) {
-		// 			reject(err);
-		// 		});
-		// 	});
-		// }
-
 	}, {
 		key: 'fetchRequest',
 		value: function fetchRequest(url, callback) {
 			fetch(url).then(function (response) {
-				if (response.status !== 200) {
+				if (response.status >= 200 && response.status < 300) {
+					// Examine the text in the response
+					response.json().then(function (data) {
+						callback(data);
+					}).catch(function (error) {
+						console.log(error);
+					});
+				} else {
 					console.log('Looks like there was a problem. Status Code: ' + response.status);
 					return;
 				}
-
-				// Examine the text in the response
-				response.json().then(function (data) {
-					callback(data);
-				});
 			}).catch(function (err) {
 				console.log('Fetch Error :-S', err);
 			});
@@ -250,8 +234,10 @@ var View = function () {
 	_createClass(View, [{
 		key: 'buildAddress',
 		value: function buildAddress(components) {
+			console.log(components);
 			components = components.filter(function (component) {
-				return component.types.includes('route') || component.types.includes('locality');
+				// return component.types.includes('route') || component.types.includes('locality');
+				return component.types.includes('locality');
 			});
 
 			components = components.map(function (component) {
@@ -267,16 +253,33 @@ var View = function () {
 		value: function render() {
 			var _this = this;
 
-			this.app.getCoords().then(function (coords) {
+			this.app.getCoords().then(function (userCoords) {
 				// Get the first address matching the coordinates
-				_this.app.handleRequest('GET', _this.app.config.google.baseUrl + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (address) {
-					address = address.results[0];
-					address = _this.buildAddress(address.address_components);
-					// Get the houses matching the address
-					_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + address + '&page=1&pagesize=25', function (houses) {
-						console.log(houses);
+				_this.app.handleRequest('GET', _this.app.config.google.baseUrls.roads + '?points=' + userCoords.latitude + ',' + userCoords.longitude + '&key=' + _this.app.config.google.key).then(function (streetCoords) {
+					streetCoords = streetCoords.snappedPoints;
+					console.log(streetCoords);
+
+					var promises = streetCoords.map(function (street) {
+						// console.log(streetCoords);
+						return _this.app.handleRequest('GET', _this.app.config.google.baseUrl + '?latlng=' + streetCoords.location.latitude + ',' + streetCoords.location.longitude + '&key=' + _this.app.config.google.key);
 					});
+
+					// Promise.all(promises).then(streetCoords => {
+					//
+					// });
+
+					// console.log(promises);
+
+					// address = address.results[0];
+					// address = this.buildAddress(address.address_components);
+					// // Get the houses matching the address
+					// this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
+					// 	console.log(houses);
+					// });
 				});
+				// this.app.fetchRequest(`http://api.geonames.org/findNearbyStreetsOSM?lat=${coords.latitude}&lng=${coords.longitude}&username=demo`, streets => {
+				// 	console.log(streets);
+				// });
 			}).catch(function (error) {
 				console.log(error);
 			});
