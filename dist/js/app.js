@@ -6,7 +6,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     "use strict";
 
     var cfg$$config = {
-        fundaKey: '271175433a7c4fe2a45750d385dd9bfd'
+        funda: {
+            key: '271175433a7c4fe2a45750d385dd9bfd',
+            baseUrls: {
+                search: 'http://partnerapi.funda.nl/feeds/Aanbod.svc',
+                objects: 'http://partnerapi.funda.nl/feeds/Aanbod.svc',
+                autoSuggest: 'http://zb.funda.info/frontend',
+                map: 'http://mt1.funda.nl/maptiledata.ashx'
+            }
+        },
+        google: {
+            key: 'AIzaSyA5emTbr8ytwvzrw9NQW7zlXg1NubeDG5M',
+            baseUrl: 'https://maps.googleapis.com/maps/api/geocode/json'
+        }
     };
 
     var cfg$$default = cfg$$config;
@@ -43,7 +55,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this = this;
 
                 this.app.getCoords().then(function (coords) {
-                    _this.app.store.getAssets(coords);
+                    _this.app.getAddress(coords).then(function (address) {
+                        console.log(address);
+                    });
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -88,7 +102,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(modules$App$$App, [{
             key: 'getCoords',
             value: function getCoords() {
-                console.log('getting location');
                 return new Promise(function (resolve, reject) {
                     if (navigator.geolocation.getCurrentPosition) {
                         navigator.geolocation.getCurrentPosition(function (data) {
@@ -97,6 +110,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     } else {
                         reject('Couldn\'t get the location from your browser');
                     }
+                });
+            }
+        }, {
+            key: 'getAddress',
+            value: function getAddress(coords) {
+                console.log(coords);
+                return new Promise(function (resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+
+                    xhr.open('GET', cfg$$default.google.baseUrl + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + cfg$$default.google.key);
+
+                    xhr.onload = function () {
+                        if (this.status >= 200 && this.status < 300) {
+                            resolve(JSON.parse(xhr.responseText).results[0]);
+                        } else {
+                            reject({ status: this.status, statusText: xhr.statusText });
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        reject({ status: this.status, statusText: xhr.statusText });
+                    };
+
+                    xhr.send();
                 });
             }
         }, {

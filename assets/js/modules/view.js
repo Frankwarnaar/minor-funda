@@ -8,7 +8,10 @@ class View {
 	render() {
 		this.app.getCoords()
 			.then(coords => {
-				this.app.store.getAssets(coords);
+				this.app.getAddress(coords)
+					.then(address => {
+						console.log(address);
+					});
 			})
 			.catch(error => {
 				console.log(error);

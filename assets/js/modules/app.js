@@ -15,7 +15,6 @@ class App {
 	}
 
 	getCoords() {
-		console.log('getting location');
 		return new Promise(function(resolve, reject) {
 			if (navigator.geolocation.getCurrentPosition) {
 				navigator.geolocation.getCurrentPosition(data => {
@@ -24,6 +23,29 @@ class App {
 			} else {
 				reject(`Couldn't get the location from your browser`);
 			}
+		});
+	}
+
+	getAddress(coords) {
+		console.log(coords);
+		return new Promise(function(resolve, reject) {
+			var xhr = new XMLHttpRequest();
+
+			xhr.open('GET', `${config.google.baseUrl}?latlng=${coords.latitude},${coords.longitude}&key=${config.google.key}`);
+
+			xhr.onload = function() {
+				if (this.status >= 200 && this.status < 300) {
+					resolve(JSON.parse(xhr.responseText).results[0]);
+				} else {
+					reject({status: this.status, statusText: xhr.statusText});
+				}
+			};
+
+			xhr.onerror = function() {
+				reject({status: this.status, statusText: xhr.statusText});
+			};
+
+			xhr.send();
 		});
 	}
 
