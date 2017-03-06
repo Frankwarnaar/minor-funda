@@ -6,7 +6,7 @@ class Store {
 	}
 
 	getAssets(location) {
-		console.log(location);
+
 	}
 }
 

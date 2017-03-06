@@ -25,8 +25,8 @@ var config = {
 	funda: {
 		key: '271175433a7c4fe2a45750d385dd9bfd',
 		baseUrls: {
-			search: 'http://partnerapi.funda.nl/feeds/Aanbod.svc',
-			objects: 'http://partnerapi.funda.nl/feeds/Aanbod.svc',
+			search: 'http://funda.kyrandia.nl/feeds/Aanbod.svc',
+			objects: 'http://funda.kyrandia.nl/feeds/Aanbod.svc',
 			autoSuggest: 'http://zb.funda.info/frontend',
 			map: 'http://mt1.funda.nl/maptiledata.ashx'
 		}
@@ -93,16 +93,21 @@ var App = function () {
 			});
 		}
 	}, {
-		key: 'getAddress',
-		value: function getAddress(coords) {
+		key: 'handleRequest',
+		value: function handleRequest(method, url, xml) {
 			return new Promise(function (resolve, reject) {
 				var xhr = new XMLHttpRequest();
 
-				xhr.open('GET', _cfg2.default.google.baseUrl + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _cfg2.default.google.key);
+				xhr.open(method, url);
 
 				xhr.onload = function () {
 					if (this.status >= 200 && this.status < 300) {
-						resolve(JSON.parse(xhr.responseText).results[0]);
+						console.log(xhr.responseText);
+						if (xml) {
+							resolve(xhr.responseText);
+						} else {
+							resolve(JSON.parse(xhr.responseText));
+						}
 					} else {
 						reject({ status: this.status, statusText: xhr.statusText });
 					}
@@ -181,9 +186,7 @@ var Store = function () {
 
 	_createClass(Store, [{
 		key: "getAssets",
-		value: function getAssets(location) {
-			console.log(location);
-		}
+		value: function getAssets(location) {}
 	}]);
 
 	return Store;
@@ -223,7 +226,7 @@ var View = function () {
 			});
 
 			return components.reduce(function (buffer, current) {
-				return buffer + ', ' + current;
+				return buffer + '/' + current;
 			});
 		}
 	}, {
@@ -232,9 +235,14 @@ var View = function () {
 			var _this = this;
 
 			this.app.getCoords().then(function (coords) {
-				_this.app.getAddress(coords).then(function (address) {
+				// Get the first address matching the coordinates
+				_this.app.handleRequest('GET', _this.app.config.google.baseUrl + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (address) {
+					address = address.results[0];
 					address = _this.buildAddress(address.address_components);
-					console.log(address);
+					// Get the houses matching the address
+					_this.app.handleRequest('GET', _this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + address + '&page=1&pagesize=25', true).then(function (houses) {
+						console.log(houses);
+					});
 				});
 			}).catch(function (error) {
 				console.log(error);

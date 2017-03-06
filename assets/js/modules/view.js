@@ -15,17 +15,23 @@ class View {
 		});
 
 		return components.reduce((buffer, current) => {
-			return `${buffer}, ${current}`;
+			return `${buffer}/${current}`;
 		});
 	}
 
 	render() {
 		this.app.getCoords()
 			.then(coords => {
-				this.app.getAddress(coords)
+				// Get the first address matching the coordinates
+				this.app.handleRequest('GET', `${this.app.config.google.baseUrl}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
 			.then(address => {
+				address = address.results[0];
 				address = this.buildAddress(address.address_components);
-				console.log(address);
+				// Get the houses matching the address
+				this.app.handleRequest('GET', `${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, true)
+					.then(houses => {
+						console.log(houses);
+					});
 			});
 		})
 			.catch(error => {

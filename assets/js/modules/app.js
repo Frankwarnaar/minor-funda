@@ -26,15 +26,20 @@ class App {
 		});
 	}
 
-	getAddress(coords) {
+	handleRequest(method, url, xml) {
 		return new Promise(function(resolve, reject) {
 			var xhr = new XMLHttpRequest();
 
-			xhr.open('GET', `${config.google.baseUrl}?latlng=${coords.latitude},${coords.longitude}&key=${config.google.key}`);
+			xhr.open(method, url);
 
 			xhr.onload = function() {
 				if (this.status >= 200 && this.status < 300) {
-					resolve(JSON.parse(xhr.responseText).results[0]);
+					console.log(xhr.responseText);
+					if (xml) {
+						resolve(xhr.responseText);
+					} else {
+						resolve(JSON.parse(xhr.responseText));
+					}
 				} else {
 					reject({status: this.status, statusText: xhr.statusText});
 				}
