@@ -22,6 +22,7 @@
     "browser-sync": "^2.18.7",
     "browserify": "^14.1.0",
     "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
     "gulp-if": "^2.0.2",
     "gulp-image": "^2.7.5",
     "gulp-less": "^3.3.0",

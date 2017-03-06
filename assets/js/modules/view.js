@@ -7,7 +7,8 @@ class View {
 
 	buildAddress(components) {
 		components = components.filter(component => {
-			return component.types.includes('route') || component.types.includes('locality');
+			// return component.types.includes('route') || component.types.includes('locality');
+			return component.types.includes('locality');
 		});
 
 		components = components.map(component => {
@@ -23,7 +24,7 @@ class View {
 		this.app.getCoords()
 			.then(coords => {
 				// Get the first address matching the coordinates
-				this.app.handleRequest('GET', `${this.app.config.google.baseUrl}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
+				this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
 			.then(address => {
 				address = address.results[0];
 				address = this.buildAddress(address.address_components);

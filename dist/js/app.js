@@ -33,7 +33,10 @@ var config = {
 	},
 	google: {
 		key: 'AIzaSyA5emTbr8ytwvzrw9NQW7zlXg1NubeDG5M',
-		baseUrl: 'https://maps.googleapis.com/maps/api/geocode/json'
+		baseUrls: {
+			maps: 'https://maps.googleapis.com/maps/api/geocode/json',
+			roads: 'https://roads.googleapis.com/v1/nearestRoads'
+		}
 	}
 };
 
@@ -251,7 +254,8 @@ var View = function () {
 		key: 'buildAddress',
 		value: function buildAddress(components) {
 			components = components.filter(function (component) {
-				return component.types.includes('route') || component.types.includes('locality');
+				// return component.types.includes('route') || component.types.includes('locality');
+				return component.types.includes('locality');
 			});
 
 			components = components.map(function (component) {
@@ -269,7 +273,7 @@ var View = function () {
 
 			this.app.getCoords().then(function (coords) {
 				// Get the first address matching the coordinates
-				_this.app.handleRequest('GET', _this.app.config.google.baseUrl + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (address) {
+				_this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (address) {
 					address = address.results[0];
 					address = _this.buildAddress(address.address_components);
 					// Get the houses matching the address
