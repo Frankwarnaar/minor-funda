@@ -1,14 +1,20 @@
 /*jshint esversion: 6 */
 
-const babel     = require('gulp-babel'),
+const babelify  = require('babelify'),
 	browserSync = require('browser-sync'),
+	browserify  = require('browserify'),
+	buffer      = require('vinyl-buffer'),
 	bundler     = require('gulp-es6-module-bundler'),
 	gulp        = require('gulp'),
+	gulpif      = require('gulp-if'),
 	gutil       = require('gulp-util'),
 	image       = require('gulp-image'),
 	less        = require('gulp-less'),
 	plumber     = require('gulp-plumber'),
-	watch       = require('gulp-watch');
+	source      = require('vinyl-source-stream'),
+	sourcemaps  = require('gulp-sourcemaps'),
+	watch       = require('gulp-watch'),
+	watchify    = require('watchify');
 
 /* ============================================================
 	Main tasks
@@ -35,7 +41,7 @@ const config = {
 	Watch
    ============================================================ */
 
-gulp.task('watch', ['watch:html', 'watch:js', 'watch:less', 'watch:images']);
+gulp.task('watch', ['watch:html', 'watchify', 'watch:less', 'watch:images']);
 
 gulp.task('watch:less', ['less'], () => {
 	return gulp.watch(config.assetsPath + '/styles/**/*.less', ['less']);
@@ -94,6 +100,38 @@ gulp.task('js', () => {
 		}))
 		.pipe(gulp.dest(config.distPath + '/js'))
 		.pipe(browserSync.stream());
+});
+
+gulp.task('watchify', function () {
+	const props = {
+		entries: [config.assetsPath + '/js/app.js'],
+		debug: config.debug,
+		cache: {},
+		packageCache: {},
+	};
+
+	const bundler = config.debug ? watchify(browserify(props)) : browserify(props);
+		bundler.transform(babelify, {presets: ["es2015-without-strict"]});
+
+	function rebundle() {
+		const stream = bundler.bundle();
+		return stream.on('error', handleError)
+			.pipe(source('app.js'))
+			.pipe(buffer())
+			.pipe(sourcemaps.init({
+				loadMaps: config.debug
+			}))
+			.pipe(gulpif(config.debug, sourcemaps.write('./')))
+			.pipe(gulp.dest(config.distPath + '/js/'))
+			.pipe(browserSync.stream());
+	}
+
+	bundler.on('update', function() {
+		rebundle();
+		gutil.log('Rebundle...');
+	});
+
+	return rebundle();
 });
 
 /* ============================================================
