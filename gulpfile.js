@@ -22,7 +22,7 @@ const babelify  = require('babelify'),
    ============================================================ */
 
 gulp.task('default', ['watch', 'browser-sync']);
-gulp.task('build', ['clean', 'disable-debug', 'less', 'watchify', 'images']);
+gulp.task('build', ['clean', 'disable-debug', 'less', 'watchify', 'fonts', 'images']);
 
 gulp.task('clean', () => {
 	return gulp.src(config.distPath, {read: false})
@@ -47,7 +47,7 @@ const config = {
 	Watch
    ============================================================ */
 
-gulp.task('watch', ['watch:html', 'watch:js', 'watch:less', 'watch:images']);
+gulp.task('watch', ['watch:html', 'watch:js', 'watch:less']);
 
 gulp.task('watch:less', ['less'], () => {
 	return gulp.watch(config.assetsPath + '/styles/**/*.less', ['less']);
@@ -60,11 +60,6 @@ gulp.task('watch:js', ['watchify'], () => {
 gulp.task('watch:html', () => {
 	return gulp.watch(['*.html']).on('change', browserSync.reload);
 });
-
-gulp.task('watch:images', () => {
-	return gulp.watch([`${config.assetsPatch}/img/*`, `${config.assetsPatch}/img/**/*`], ['images']);
-});
-
 /* ============================================================
 	Error handler
    ============================================================ */
@@ -138,11 +133,20 @@ gulp.task('browser-sync', () => {
 });
 
 /* ============================================================
+	Fonts
+   ============================================================ */
+
+gulp.task('fonts', () => {
+	gulp.src(`${config.assetsPath}/fonts/**`)
+		.pipe(gulp.dest(config.distPath + '/fonts'));
+});
+
+/* ============================================================
 	Image compression
    ============================================================ */
 
 gulp.task('images', () => {
-  gulp.src(config.assetsPath + '/img/**/*')
+  gulp.src(`${config.assetsPath}/img/**/*`)
 	.pipe(image())
-	.pipe(gulp.dest(config.distPath + '/img'));
+	.pipe(gulp.dest(`${config.distPath}/img`));
 });

@@ -10,18 +10,31 @@
 .hidden {
   display: none;
 }
+@font-face {
+  font-family: 'Proxima Nova';
+  src: local('proximanova'), local('proximanova-semibold'), url('../../assets/fonts/proximanova/proximanova-semibold.woff2') format('woff2'), url('../../assets/fonts/proximanova/proximanova-semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Proxima Nova';
+  src: local('proximanova'), local('proximanova-regular'), url('../../assets/fonts/proximanova/proximanova-regular.woff2') format('woff2'), url('../../assets/fonts/proximanova/proximanova-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
 html {
   width: 100%;
   min-height: 100%;
 }
 body {
+  padding-top: 3rem;
   margin: 0;
   width: 100%;
   min-height: 100%;
   background: #ecf0f1;
   color: #41484e;
   font-size: calc(.8em + .3vw);
-  font-family: 'helvetica', sans-serif;
+  font-family: 'Proxima Nova', sans-serif;
 }
 h1,
 h2,
@@ -252,10 +265,44 @@ a span {
     transform: rotate(720deg) scale(0.5);
   }
 }
+.loader-container {
+  position: absolute;
+  top: 3rem;
+  height: calc(100% - 3rem);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.loader-container .loader {
+  margin: 0 auto;
+}
 ol {
   padding: 0;
   margin: 0;
   list-style-type: none;
   max-width: 30rem;
   order: -1;
+}
+.navigation {
+  padding: 0 1rem;
+  margin: 0;
+  width: 100%;
+  height: 3rem;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #F7A100;
+}
+.navigation nav {
+  height: 100%;
+}
+.navigation a {
+  height: 100%;
+}
+.navigation a img {
+  padding: .325rem 0;
+  height: 2.35rem;
 }

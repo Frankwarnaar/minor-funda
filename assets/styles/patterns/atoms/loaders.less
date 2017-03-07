@@ -36,3 +36,19 @@
         transform: rotate(720deg) scale(.5);
     }
 }
+
+.loader-container {
+	position: absolute;
+	top: @nav-height;
+	height: ~"calc(100% - @{nav-height})";
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+
+	.loader {
+		margin: 0 auto;
+	}
+}
