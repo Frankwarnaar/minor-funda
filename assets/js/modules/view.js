@@ -18,10 +18,9 @@ class View {
 						<a href="#details/${object.GlobalId}">
 							<h3>${object.Adres}</h3>
 						</a>
-						<span>€${object.Koopprijs.toLocaleString('currency')}</span>
+						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
 					</li>
 					`;
-					console.log(listItem);
 					$resultsList.insertAdjacentHTML('beforeend', `${listItem}`);
 				});
 

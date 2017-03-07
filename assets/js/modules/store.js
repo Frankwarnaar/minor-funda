@@ -28,8 +28,11 @@ class Store {
 					city = city.results[0];
 					city = this.app.utils.buildAddress(city.address_components);
 
-					const objectReqs = streets.map(street => {
-						return this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`);
+					const objectReqs = [];
+					streets.map(street => {
+						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`));
+
+						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=huur&zo=/${city}/${street}&page=1&pagesize=25`));
 					});
 
 					Promise.all(objectReqs)

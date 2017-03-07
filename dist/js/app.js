@@ -236,8 +236,11 @@ var Store = function () {
 						city = city.results[0];
 						city = _this.app.utils.buildAddress(city.address_components);
 
-						var objectReqs = streets.map(function (street) {
-							return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
+						var objectReqs = [];
+						streets.map(function (street) {
+							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
+
+							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=huur&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
 						});
 
 						Promise.all(objectReqs).then(function (results) {
@@ -343,8 +346,7 @@ var View = function () {
 				var $resultsList = document.querySelector('#results-list');
 
 				objects.map(function (object) {
-					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '">\n\t\t\t\t\t\t\t<h3>' + object.Adres + '</h3>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t\t<span>\u20AC' + object.Koopprijs.toLocaleString('currency') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
-					console.log(listItem);
+					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '">\n\t\t\t\t\t\t\t<h3>' + object.Adres + '</h3>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
 					$resultsList.insertAdjacentHTML('beforeend', '' + listItem);
 				});
 
