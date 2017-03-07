@@ -71,6 +71,10 @@ var _Store = require('./Store.js');
 
 var _Store2 = _interopRequireDefault(_Store);
 
+var _Utils = require('./Utils.js');
+
+var _Utils2 = _interopRequireDefault(_Utils);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -83,6 +87,7 @@ var App = function () {
 		this.controller = new _Controller2.default(this);
 		this.view = new _View2.default(this);
 		this.store = new _Store2.default(this);
+		this.utils = new _Utils2.default();
 		this.init();
 	}
 
@@ -152,7 +157,7 @@ var App = function () {
 
 exports.default = App;
 
-},{"../cfg.js":2,"./Controller.js":4,"./Store.js":5,"./View.js":6}],4:[function(require,module,exports){
+},{"../cfg.js":2,"./Controller.js":4,"./Store.js":5,"./Utils.js":6,"./View.js":7}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -191,30 +196,52 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*jshint esversion: 6 */
+
+var Store = function Store(app) {
+	_classCallCheck(this, Store);
+
+	this.app = app;
+};
+
+exports.default = Store;
+
+},{}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /*jshint esversion: 6 */
-
-var Store = function () {
-	function Store(app) {
-		_classCallCheck(this, Store);
-
-		this.app = app;
+var Utils = function () {
+	function Utils() {
+		_classCallCheck(this, Utils);
 	}
 
-	_createClass(Store, [{
-		key: "getAssets",
-		value: function getAssets(location) {}
+	_createClass(Utils, [{
+		key: "filterArray",
+
+		// Remove item from array if it contains a subtring
+		value: function filterArray(array, substring) {
+			return array.filter(function (item) {
+				return !item.includes(substring);
+			});
+		}
 	}]);
 
-	return Store;
+	return Utils;
 }();
 
-exports.default = Store;
+exports.default = Utils;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -260,36 +287,31 @@ var View = function () {
 			this.app.getCoords().then(function (coords) {
 				// Get the first address matching the coordinates
 				_this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName).then(function (streets) {
-					console.log(streets);
 					streets = streets.streetSegment.map(function (street) {
 						return street.name;
 					});
 					streets = [].concat(_toConsumableArray(new Set(streets)));
 
+					streets = _this.app.utils.filterArray(streets, '0');
+
 					_this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (city) {
 						city = city.results[0];
 						city = _this.buildAddress(city.address_components);
-
-						// const objects = [];
 
 						var objectReqs = streets.map(function (street) {
 							return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
 						});
 
-						Promise.all(objectReqs).then(function (objects) {
+						Promise.all(objectReqs).then(function (results) {
+							var streets = results.map(function (street) {
+								return street.Objects;
+							});
+
+							// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
+							var objects = [].concat.apply([], streets);
+
 							console.log(objects);
 						});
-
-						// streets.map(street => {
-						// 	// Get the houses matching the address
-						// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`)
-						// 	.then(results => {
-						// 		console.log(results.Objects);
-						// 		objects.push(results.Objects);
-						// 	});
-						// });
-
-						// console.log(objects);
 					});
 				});
 			}).catch(function (error) {

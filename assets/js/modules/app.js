@@ -4,6 +4,7 @@ import config from '../cfg.js';
 import Controller from './Controller.js';
 import View from './View.js';
 import Store from './Store.js';
+import Utils from './Utils.js';
 
 class App {
 	constructor() {
@@ -11,6 +12,7 @@ class App {
 		this.controller = new Controller(this);
 		this.view       = new View(this);
 		this.store      = new Store(this);
+		this.utils      = new Utils();
 		this.init();
 	}
 
@@ -38,7 +40,6 @@ class App {
 						resolve(data);
 					});
 				}
-
 			})
 			.catch((err) => {
 				reject(err);
