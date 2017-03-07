@@ -25,10 +25,10 @@ var config = {
 	funda: {
 		key: '271175433a7c4fe2a45750d385dd9bfd',
 		baseUrls: {
-			search: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
-			objects: '//funda.kyrandia.nl/feeds/Aanbod.svc/json/detail',
-			autoSuggest: '//zb.funda.info/frontend/json',
-			map: '//mt1.funda.nl/maptiledata.ashx/json'
+			search: 'http://funda.kyrandia.nl/feeds/Aanbod.svc/json',
+			objects: 'http://funda.kyrandia.nl/feeds/Aanbod.svc/json/detail',
+			autoSuggest: 'http://zb.funda.info/frontend/json',
+			map: 'http://mt1.funda.nl/maptiledata.ashx/json'
 		}
 	},
 	google: {
@@ -263,12 +263,17 @@ var Store = function () {
 						city = city.results[0];
 						city = _this.app.utils.buildAddress(city.address_components);
 
+						console.log(streets);
+						console.log(city);
+
 						var objectReqs = [];
 						streets.map(function (street) {
 							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
 
 							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=huur&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
 						});
+
+						console.log(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + streets[0] + '&page=1&pagesize=25');
 
 						Promise.all(objectReqs).then(function (results) {
 							var streets = results.map(function (street) {
@@ -277,7 +282,6 @@ var Store = function () {
 
 							// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
 							var objects = [].concat.apply([], streets);
-							objects = [].concat(_toConsumableArray(new Set(objects)));
 
 							resolve(objects);
 						});

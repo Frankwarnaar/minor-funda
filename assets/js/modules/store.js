@@ -33,12 +33,17 @@ class Store {
 					city = city.results[0];
 					city = this.app.utils.buildAddress(city.address_components);
 
+					console.log(streets);
+					console.log(city);
+
 					const objectReqs = [];
 					streets.map(street => {
 						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`));
 
 						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=huur&zo=/${city}/${street}&page=1&pagesize=25`));
 					});
+
+					console.log(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${streets[0]}&page=1&pagesize=25`);
 
 					Promise.all(objectReqs)
 				.then(results => {
@@ -47,8 +52,7 @@ class Store {
 						});
 
 						// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
-						let objects = [].concat.apply([], streets);
-						objects = [...new Set(objects)];
+						const objects = [].concat.apply([], streets);
 
 						resolve(objects);
 					});

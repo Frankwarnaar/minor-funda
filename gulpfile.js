@@ -128,7 +128,8 @@ gulp.task('browser-sync', () => {
 	browserSync.init({
 		server: {
 			baseDir: "./"
-		}
+		},
+		https: true
 	});
 });
 
