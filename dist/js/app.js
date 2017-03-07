@@ -286,32 +286,36 @@ var View = function () {
 
 			this.app.getCoords().then(function (coords) {
 				// Get the first address matching the coordinates
-				_this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName).then(function (streets) {
+
+				var getStreets = _this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName);
+				var getCity = _this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key);
+
+				Promise.all([getStreets, getCity]).then(function (results) {
+					var streets = results[0];
+					var city = results[1];
+
 					streets = streets.streetSegment.map(function (street) {
 						return street.name;
 					});
 					streets = [].concat(_toConsumableArray(new Set(streets)));
-
 					streets = _this.app.utils.filterArray(streets, '0');
 
-					_this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (city) {
-						city = city.results[0];
-						city = _this.buildAddress(city.address_components);
+					city = city.results[0];
+					city = _this.buildAddress(city.address_components);
 
-						var objectReqs = streets.map(function (street) {
-							return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
+					var objectReqs = streets.map(function (street) {
+						return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
+					});
+
+					Promise.all(objectReqs).then(function (results) {
+						var streets = results.map(function (street) {
+							return street.Objects;
 						});
 
-						Promise.all(objectReqs).then(function (results) {
-							var streets = results.map(function (street) {
-								return street.Objects;
-							});
+						// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
+						var objects = [].concat.apply([], streets);
 
-							// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
-							var objects = [].concat.apply([], streets);
-
-							console.log(objects);
-						});
+						console.log(objects);
 					});
 				});
 			}).catch(function (error) {

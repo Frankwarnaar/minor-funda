@@ -24,17 +24,21 @@ class View {
 		this.app.getCoords()
 			.then(coords => {
 				// Get the first address matching the coordinates
-				this.app.handleRequest('GET', `${this.app.config.geoNames.baseUrl}&lat=${coords.latitude}&lng=${coords.longitude}&username=${this.app.config.geoNames.userName}`)
-			.then(streets => {
+
+				const getStreets = this.app.handleRequest('GET', `${this.app.config.geoNames.baseUrl}&lat=${coords.latitude}&lng=${coords.longitude}&username=${this.app.config.geoNames.userName}`);
+				const getCity = this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`);
+
+				Promise.all([getStreets, getCity])
+			.then(results => {
+				let streets = results[0];
+				let city = results[1];
+
 				streets = streets.streetSegment.map(street => {
 					return street.name;
 				});
 				streets = [...new Set(streets)];
-
 				streets = this.app.utils.filterArray(streets, '0');
 
-				this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
-			.then(city => {
 				city = city.results[0];
 				city = this.buildAddress(city.address_components);
 
@@ -52,7 +56,6 @@ class View {
 					const objects = [].concat.apply([], streets);
 
 					console.log(objects);
-					});
 				});
 			});
 		})
