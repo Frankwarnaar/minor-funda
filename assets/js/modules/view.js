@@ -29,18 +29,27 @@ class View {
 				streets = streets.streetSegment.map(street => {
 					return street.name;
 				});
-				console.log(streets);
+				streets = [...new Set(streets)];
+
+				this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
+					.then(city => {
+						city = city.results[0];
+						city = this.buildAddress(city.address_components);
+
+						const objects = [];
+
+						streets.map(street => {
+							// Get the houses matching the address
+							this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`, (results) => {
+								console.log(results);
+								results = results.Objects;
+								objects.push(results);
+							});
+						});
+
+						console.log(objects);
+					});
 			});
-			// 	this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
-			// .then(address => {
-			// 	address = address.results[0];
-			// 	address = this.buildAddress(address.address_components);
-			// 	// Get the houses matching the address
-			// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
-			// 		houses = houses.Objects;
-			// 		console.log(houses);
-			// 	});
-			// });
 		})
 		.catch(error => {
 			console.log(error);
