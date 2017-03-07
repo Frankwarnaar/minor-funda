@@ -1,5 +1,5 @@
 .results-list {
-	padding: 1rem;
+	padding: 0;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
@@ -14,6 +14,25 @@
 	li {
 		width: 100%;
 		box-sizing: border-box;
+		position: relative;
+
+		a {
+			text-decoration: none;
+			display: block;
+		}
+
+		a:after {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
+
+		h3 {
+			margin: 0;
+		}
 
 		img {
 			width: 100%;

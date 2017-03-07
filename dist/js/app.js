@@ -158,17 +158,21 @@ var App = function () {
 exports.default = App;
 
 },{"../cfg.js":2,"./Controller.js":4,"./Store.js":5,"./Utils.js":6,"./View.js":7}],4:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*jshint esversion: 6 */
+
+var _routieMin = require('../vendor/routie.min.js');
+
+var _routieMin2 = _interopRequireDefault(_routieMin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/*jshint esversion: 6 */
 
 var Controller = function () {
 	function Controller(app) {
@@ -178,9 +182,27 @@ var Controller = function () {
 	}
 
 	_createClass(Controller, [{
-		key: "init",
+		key: 'init',
 		value: function init() {
 			this.app.view.render();
+			this.router();
+		}
+	}, {
+		key: 'router',
+		value: function router() {
+			var app = this.app;
+			(0, _routieMin2.default)({
+				// Detail page
+				'details/:objectId': function detailsObjectId(objectId) {
+					app.view.activatePage('#details');
+					// app.view.renderObject(objectId);
+				},
+
+				// Fallback to starting page
+				'*': function _() {
+					app.view.activatePage('#results');
+				}
+			});
 		}
 	}]);
 
@@ -189,7 +211,7 @@ var Controller = function () {
 
 exports.default = Controller;
 
-},{}],5:[function(require,module,exports){
+},{"../vendor/routie.min.js":8}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -341,12 +363,13 @@ var View = function () {
 		value: function render() {
 			var _this = this;
 
+			this.showLoader(true);
 			this.app.store.getObjectsNearby().then(function (objects) {
 				var $results = document.querySelector('.results');
 				var $resultsList = document.querySelector('#results-list');
 
 				objects.map(function (object) {
-					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '">\n\t\t\t\t\t\t\t<h3>' + object.Adres + '</h3>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
 					$resultsList.insertAdjacentHTML('beforeend', '' + listItem);
 				});
 
@@ -354,6 +377,21 @@ var View = function () {
 				_this.showLoader(false);
 			}).catch(function (err) {
 				console.log(err);
+			});
+		}
+
+		// Make the current page visible and all the other invisible
+
+	}, {
+		key: 'activatePage',
+		value: function activatePage(route) {
+			var $pages = Array.from(document.querySelectorAll('[data-page]'));
+			$pages.forEach(function ($page) {
+				if ('#' + $page.getAttribute('id') === route) {
+					$page.classList.remove('hidden');
+				} else {
+					$page.classList.add('hidden');
+				}
 			});
 		}
 	}, {
@@ -372,6 +410,94 @@ var View = function () {
 }();
 
 exports.default = View;
+
+},{}],8:[function(require,module,exports){
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*!
+ * routie - a tiny hash router
+ * v0.3.2
+ * http://projects.jga.me/routie
+ * copyright Greg Allen 2016
+ * MIT License
+*/
+var Routie = function Routie(a, b) {
+  var c = [],
+      d = {},
+      e = "routie",
+      f = a[e],
+      g = function g(a, b) {
+    this.name = b, this.path = a, this.keys = [], this.fns = [], this.params = {}, this.regex = h(this.path, this.keys, !1, !1);
+  };g.prototype.addHandler = function (a) {
+    this.fns.push(a);
+  }, g.prototype.removeHandler = function (a) {
+    for (var b = 0, c = this.fns.length; c > b; b++) {
+      var d = this.fns[b];if (a == d) return void this.fns.splice(b, 1);
+    }
+  }, g.prototype.run = function (a) {
+    for (var b = 0, c = this.fns.length; c > b; b++) {
+      this.fns[b].apply(this, a);
+    }
+  }, g.prototype.match = function (a, b) {
+    var c = this.regex.exec(a);if (!c) return !1;for (var d = 1, e = c.length; e > d; ++d) {
+      var f = this.keys[d - 1],
+          g = "string" == typeof c[d] ? decodeURIComponent(c[d]) : c[d];f && (this.params[f.name] = g), b.push(g);
+    }return !0;
+  }, g.prototype.toURL = function (a) {
+    var b = this.path;for (var c in a) {
+      b = b.replace("/:" + c, "/" + a[c]);
+    }if (b = b.replace(/\/:.*\?/g, "/").replace(/\?/g, ""), -1 != b.indexOf(":")) throw new Error("missing parameters for url: " + b);return b;
+  };var h = function h(a, b, c, d) {
+    return a instanceof RegExp ? a : (a instanceof Array && (a = "(" + a.join("|") + ")"), a = a.concat(d ? "" : "/?").replace(/\/\(/g, "(?:/").replace(/\+/g, "__plus__").replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, function (a, c, d, e, f, g) {
+      return b.push({ name: e, optional: !!g }), c = c || "", "" + (g ? "" : c) + "(?:" + (g ? c : "") + (d || "") + (f || d && "([^/.]+?)" || "([^/]+?)") + ")" + (g || "");
+    }).replace(/([\/.])/g, "\\$1").replace(/__plus__/g, "(.+)").replace(/\*/g, "(.*)"), new RegExp("^" + a + "$", c ? "" : "i"));
+  },
+      i = function i(a, b) {
+    var e = a.split(" "),
+        f = 2 == e.length ? e[0] : null;a = 2 == e.length ? e[1] : e[0], d[a] || (d[a] = new g(a, f), c.push(d[a])), d[a].addHandler(b);
+  },
+      j = function j(a, b) {
+    if ("function" == typeof b) i(a, b), j.reload();else if ("object" == (typeof a === "undefined" ? "undefined" : _typeof(a))) {
+      for (var c in a) {
+        i(c, a[c]);
+      }j.reload();
+    } else "undefined" == typeof b && j.navigate(a);
+  };j.lookup = function (a, b) {
+    for (var d = 0, e = c.length; e > d; d++) {
+      var f = c[d];if (f.name == a) return f.toURL(b);
+    }
+  }, j.remove = function (a, b) {
+    var c = d[a];c && c.removeHandler(b);
+  }, j.removeAll = function () {
+    d = {}, c = [];
+  }, j.navigate = function (a, b) {
+    b = b || {};var c = b.silent || !1;c && o(), setTimeout(function () {
+      window.location.hash = a, c && setTimeout(function () {
+        n();
+      }, 1);
+    }, 1);
+  }, j.noConflict = function () {
+    return a[e] = f, j;
+  };var k = function k() {
+    return window.location.hash.substring(1);
+  },
+      l = function l(a, b) {
+    var c = [];return b.match(a, c) ? (b.run(c), !0) : !1;
+  },
+      m = j.reload = function () {
+    for (var a = k(), b = 0, d = c.length; d > b; b++) {
+      var e = c[b];if (l(a, e)) return;
+    }
+  },
+      n = function n() {
+    a.addEventListener ? a.addEventListener("hashchange", m, !1) : a.attachEvent("onhashchange", m);
+  },
+      o = function o() {
+    a.removeEventListener ? a.removeEventListener("hashchange", m) : a.detachEvent("onhashchange", m);
+  };return n(), b ? j : void (a[e] = j);
+};"undefined" == typeof module ? Routie(window) : module.exports = Routie(window, !0);
 
 },{}]},{},[1])
 

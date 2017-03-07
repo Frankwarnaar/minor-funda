@@ -266,6 +266,8 @@ a span {
   }
 }
 .loader-container {
+  padding: 0;
+  margin: 0;
   position: absolute;
   top: 3rem;
   height: calc(100% - 3rem);
@@ -296,6 +298,7 @@ ol {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 2;
   background: #F7A100;
 }
 .navigation nav {
@@ -308,8 +311,11 @@ ol {
   padding: .325rem 0;
   height: 2.35rem;
 }
+section {
+  margin: 1rem;
+}
 .results-list {
-  padding: 1rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -324,6 +330,22 @@ ol {
 .results-list li {
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+}
+.results-list li a {
+  text-decoration: none;
+  display: block;
+}
+.results-list li a:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.results-list li h3 {
+  margin: 0;
 }
 .results-list li img {
   width: 100%;
