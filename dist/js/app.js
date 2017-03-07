@@ -37,6 +37,10 @@ var config = {
 			maps: 'https://maps.googleapis.com/maps/api/geocode/json',
 			roads: 'https://roads.googleapis.com/v1/nearestRoads'
 		}
+	},
+	geoNames: {
+		baseUrl: 'http://api.geonames.org/findNearbyStreetsOSMJSON?formatted=true&style=full',
+		userName: 'demo'
 	}
 };
 
@@ -95,27 +99,6 @@ var App = function () {
 				}
 			});
 		}
-
-		// fetchRequest(url) {
-		// 	return new Promise((resolve, reject) => {
-		// 		fetch(url).then(response => {
-		// 			// Examine the text in the response
-		// 			if (response.status >= 200 && response.status < 300) {
-		// 				console.log(response);
-		// 				response.json().then(data => {
-		// 					resolve(data);
-		// 				});
-		// 			} else {
-		// 				reject(response);
-		// 			}
-		//
-		// 		})
-		// 		.catch(function(err) {
-		// 			reject(err);
-		// 		});
-		// 	});
-		// }
-
 	}, {
 		key: 'fetchRequest',
 		value: function fetchRequest(url, callback) {
@@ -273,14 +256,22 @@ var View = function () {
 
 			this.app.getCoords().then(function (coords) {
 				// Get the first address matching the coordinates
-				_this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key).then(function (address) {
-					address = address.results[0];
-					address = _this.buildAddress(address.address_components);
-					// Get the houses matching the address
-					_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + address + '&page=1&pagesize=25', function (houses) {
-						console.log(houses);
+				_this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName).then(function (streets) {
+					streets = streets.streetSegment.map(function (street) {
+						return street.name;
 					});
+					console.log(streets);
 				});
+				// 	this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
+				// .then(address => {
+				// 	address = address.results[0];
+				// 	address = this.buildAddress(address.address_components);
+				// 	// Get the houses matching the address
+				// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
+				// 		houses = houses.Objects;
+				// 		console.log(houses);
+				// 	});
+				// });
 			}).catch(function (error) {
 				console.log(error);
 			});

@@ -26,26 +26,6 @@ class App {
 		});
 	}
 
-	// fetchRequest(url) {
-	// 	return new Promise((resolve, reject) => {
-	// 		fetch(url).then(response => {
-	// 			// Examine the text in the response
-	// 			if (response.status >= 200 && response.status < 300) {
-	// 				console.log(response);
-	// 				response.json().then(data => {
-	// 					resolve(data);
-	// 				});
-	// 			} else {
-	// 				reject(response);
-	// 			}
-	//
-	// 		})
-	// 		.catch(function(err) {
-	// 			reject(err);
-	// 		});
-	// 	});
-	// }
-
 	fetchRequest(url, callback) {
 		fetch(url)
 		.then(response => {

@@ -24,19 +24,27 @@ class View {
 		this.app.getCoords()
 			.then(coords => {
 				// Get the first address matching the coordinates
-				this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
-			.then(address => {
-				address = address.results[0];
-				address = this.buildAddress(address.address_components);
-				// Get the houses matching the address
-				this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
-					console.log(houses);
+				this.app.handleRequest('GET', `${this.app.config.geoNames.baseUrl}&lat=${coords.latitude}&lng=${coords.longitude}&username=${this.app.config.geoNames.userName}`)
+			.then(streets => {
+				streets = streets.streetSegment.map(street => {
+					return street.name;
 				});
+				console.log(streets);
 			});
+			// 	this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
+			// .then(address => {
+			// 	address = address.results[0];
+			// 	address = this.buildAddress(address.address_components);
+			// 	// Get the houses matching the address
+			// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${address}&page=1&pagesize=25`, (houses) => {
+			// 		houses = houses.Objects;
+			// 		console.log(houses);
+			// 	});
+			// });
 		})
-			.catch(error => {
-				console.log(error);
-			});
+		.catch(error => {
+			console.log(error);
+		});
 	}
 }
 

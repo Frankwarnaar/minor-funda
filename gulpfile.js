@@ -22,7 +22,7 @@ const babelify  = require('babelify'),
    ============================================================ */
 
 gulp.task('default', ['watch', 'browser-sync']);
-gulp.task('build', ['clean', 'disable-debug', 'less', 'js', 'images']);
+gulp.task('build', ['clean', 'disable-debug', 'less', 'watchify', 'images']);
 
 gulp.task('clean', () => {
 	return gulp.src(config.distPath, {read: false})
@@ -47,14 +47,14 @@ const config = {
 	Watch
    ============================================================ */
 
-gulp.task('watch', ['watch:html', 'watchify', 'watch:less', 'watch:images']);
+gulp.task('watch', ['watch:html', 'watch:js', 'watch:less', 'watch:images']);
 
 gulp.task('watch:less', ['less'], () => {
 	return gulp.watch(config.assetsPath + '/styles/**/*.less', ['less']);
 });
 
-gulp.task('watch:js', ['js'], () => {
-	return gulp.watch([`${config.assetsPath}/js/*.js`, `${config.assetsPath}/js/**/*.js`], ['js']);
+gulp.task('watch:js', ['watchify'], () => {
+	return gulp.watch([`${config.assetsPath}/js/*.js`, `${config.assetsPath}/js/**/*.js`], ['watchify']);
 });
 
 gulp.task('watch:html', () => {
@@ -92,21 +92,6 @@ gulp.task('less', () => {
 /* ============================================================
 	Javascript
    ============================================================ */
-
-gulp.task('js', () => {
-	const modules = gulp.src(`${config.assetsPath}/js/**/*.js`);
-
-	return gulp.src([`${config.assetsPath}/js/app.js`])
-		.pipe(plumber({
-			errorHandler: handleError
-		}))
-		.pipe(bundler(modules))
-		.pipe(babel({
-			plugins: ["transform-remove-strict-mode"]
-		}))
-		.pipe(gulp.dest(config.distPath + '/js'))
-		.pipe(browserSync.stream());
-});
 
 gulp.task('watchify', function () {
 	const props = {
