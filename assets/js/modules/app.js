@@ -17,7 +17,7 @@ class App {
 	}
 
 	getCoords() {
-		return new Promise(function(resolve, reject) {
+		return new Promise((resolve, reject) => {
 			if (navigator.geolocation.getCurrentPosition) {
 				navigator.geolocation.getCurrentPosition(data => {
 					resolve(data.coords);

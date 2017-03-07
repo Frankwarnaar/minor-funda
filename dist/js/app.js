@@ -190,26 +190,81 @@ var Controller = function () {
 exports.default = Controller;
 
 },{}],5:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /*jshint esversion: 6 */
 
-var Store = function Store(app) {
-	_classCallCheck(this, Store);
+var Store = function () {
+	function Store(app) {
+		_classCallCheck(this, Store);
 
-	this.app = app;
-};
+		this.app = app;
+	}
+
+	_createClass(Store, [{
+		key: 'getObjectsNearby',
+		value: function getObjectsNearby() {
+			var _this = this;
+
+			return new Promise(function (resolve, reject) {
+				_this.app.getCoords().then(function (coords) {
+					// Get the first address matching the coordinates
+
+					var getStreets = _this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName);
+					var getCity = _this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key);
+
+					Promise.all([getStreets, getCity]).then(function (results) {
+						var streets = results[0];
+						var city = results[1];
+
+						streets = streets.streetSegment.map(function (street) {
+							return street.name;
+						});
+						streets = [].concat(_toConsumableArray(new Set(streets)));
+						streets = _this.app.utils.filterArray(streets, '0');
+
+						city = city.results[0];
+						city = _this.app.utils.buildAddress(city.address_components);
+
+						var objectReqs = streets.map(function (street) {
+							return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
+						});
+
+						Promise.all(objectReqs).then(function (results) {
+							var streets = results.map(function (street) {
+								return street.Objects;
+							});
+
+							// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
+							var objects = [].concat.apply([], streets);
+
+							resolve(objects);
+						});
+					});
+				}).catch(function (error) {
+					reject(error);
+				});
+			});
+		}
+	}]);
+
+	return Store;
+}();
 
 exports.default = Store;
 
 },{}],6:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -226,44 +281,6 @@ var Utils = function () {
 	}
 
 	_createClass(Utils, [{
-		key: "filterArray",
-
-		// Remove item from array if it contains a subtring
-		value: function filterArray(array, substring) {
-			return array.filter(function (item) {
-				return !item.includes(substring);
-			});
-		}
-	}]);
-
-	return Utils;
-}();
-
-exports.default = Utils;
-
-},{}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/*jshint esversion: 6 */
-
-var View = function () {
-	function View(app) {
-		_classCallCheck(this, View);
-
-		this.app = app;
-	}
-
-	_createClass(View, [{
 		key: 'buildAddress',
 		value: function buildAddress(components) {
 			components = components.filter(function (component) {
@@ -279,47 +296,50 @@ var View = function () {
 				return buffer + '/' + current;
 			});
 		}
+
+		// Remove item from array if it contains a subtring
+
 	}, {
-		key: 'render',
+		key: 'filterArray',
+		value: function filterArray(array, substring) {
+			return array.filter(function (item) {
+				return !item.includes(substring);
+			});
+		}
+	}]);
+
+	return Utils;
+}();
+
+exports.default = Utils;
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*jshint esversion: 6 */
+
+var View = function () {
+	function View(app) {
+		_classCallCheck(this, View);
+
+		this.app = app;
+	}
+
+	_createClass(View, [{
+		key: "render",
 		value: function render() {
-			var _this = this;
-
-			this.app.getCoords().then(function (coords) {
-				// Get the first address matching the coordinates
-
-				var getStreets = _this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName);
-				var getCity = _this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key);
-
-				Promise.all([getStreets, getCity]).then(function (results) {
-					var streets = results[0];
-					var city = results[1];
-
-					streets = streets.streetSegment.map(function (street) {
-						return street.name;
-					});
-					streets = [].concat(_toConsumableArray(new Set(streets)));
-					streets = _this.app.utils.filterArray(streets, '0');
-
-					city = city.results[0];
-					city = _this.buildAddress(city.address_components);
-
-					var objectReqs = streets.map(function (street) {
-						return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
-					});
-
-					Promise.all(objectReqs).then(function (results) {
-						var streets = results.map(function (street) {
-							return street.Objects;
-						});
-
-						// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
-						var objects = [].concat.apply([], streets);
-
-						console.log(objects);
-					});
-				});
-			}).catch(function (error) {
-				console.log(error);
+			this.app.store.getObjectsNearby().then(function (objects) {
+				console.log(objects);
+			}).catch(function (err) {
+				console.log(err);
 			});
 		}
 	}]);
