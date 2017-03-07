@@ -314,7 +314,7 @@ var Utils = function () {
 exports.default = Utils;
 
 },{}],7:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -334,13 +334,35 @@ var View = function () {
 	}
 
 	_createClass(View, [{
-		key: "render",
+		key: 'render',
 		value: function render() {
+			var _this = this;
+
 			this.app.store.getObjectsNearby().then(function (objects) {
-				console.log(objects);
+				var $results = document.querySelector('.results');
+				var $resultsList = document.querySelector('#results-list');
+
+				objects.map(function (object) {
+					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '">\n\t\t\t\t\t\t\t<h3>' + object.Adres + '</h3>\n\t\t\t\t\t\t</a>\n\t\t\t\t\t\t<span>\u20AC' + object.Koopprijs.toLocaleString('currency') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+					console.log(listItem);
+					$resultsList.insertAdjacentHTML('beforeend', '' + listItem);
+				});
+
+				$results.classList.remove('hidden');
+				_this.showLoader(false);
 			}).catch(function (err) {
 				console.log(err);
 			});
+		}
+	}, {
+		key: 'showLoader',
+		value: function showLoader(show) {
+			var loader = document.querySelector('.loader-container');
+			if (show) {
+				loader.classList.remove('hidden');
+			} else {
+				loader.classList.add('hidden');
+			}
 		}
 	}]);
 

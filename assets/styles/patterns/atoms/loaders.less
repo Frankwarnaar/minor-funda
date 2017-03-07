@@ -43,10 +43,13 @@
 	height: ~"calc(100% - @{nav-height})";
 	width: 100%;
 
-	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	text-align: center;
+
+	&:not(.hidden) {
+		display: flex;
+	}
 
 	.loader {
 		margin: 0 auto;

@@ -1,0 +1,34 @@
+.results-list {
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+
+	box-sizing: border-box;
+	list-style-type: none;
+
+	@media @q-md-min {
+		flex-direction: row;
+	}
+
+	li {
+		width: 100%;
+		min-width: ~"calc(33.33% - 1rem)";
+		box-sizing: border-box;
+
+		img {
+			width: 100%;
+		}
+
+		@media @q-md-min {
+			margin: .5rem;
+
+			&:nth-child(3n - 2) {
+				margin-left: 0;
+			}
+
+			&:nth-child(3n) {
+				margin-right: 0;
+			}
+		}
+	}
+}
