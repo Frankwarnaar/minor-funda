@@ -20,7 +20,7 @@ class View {
 						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
 					</li>
 					`;
-					$resultsList.insertAdjacentHTML('beforeend', `${listItem}`);
+					$resultsList.insertAdjacentHTML('beforeend', listItem);
 				});
 
 				$results.classList.remove('hidden');
@@ -35,7 +35,18 @@ class View {
 		this.showLoader(true, false);
 		this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
+				const $details = document.querySelector('#details');
 				console.log(details);
+
+				const content = `
+				<img src="${details.HoofdFoto}" alt=${details.Adres}>
+				<h1>${details.Adres}</h1>
+				`;
+
+				$details.insertAdjacentHTML('beforeend', content);
+
+				this.showLoader(false);
+				$details.classList.remove('hidden');
 			})
 			.catch(err => {
 				console.log(err);

@@ -25,10 +25,10 @@ var config = {
 	funda: {
 		key: '271175433a7c4fe2a45750d385dd9bfd',
 		baseUrls: {
-			search: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
-			objects: '//funda.kyrandia.nl/feeds/Aanbod.svc/json/detail',
-			autoSuggest: '//zb.funda.info/frontend/json',
-			map: '//mt1.funda.nl/maptiledata.ashx/json'
+			search: 'http://funda.kyrandia.nl/feeds/Aanbod.svc/json',
+			objects: 'http://funda.kyrandia.nl/feeds/Aanbod.svc/json/detail',
+			autoSuggest: 'http://zb.funda.info/frontend/json',
+			map: 'http://mt1.funda.nl/maptiledata.ashx/json'
 		}
 	},
 	google: {
@@ -376,7 +376,7 @@ var View = function () {
 
 				objects.map(function (object) {
 					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
-					$resultsList.insertAdjacentHTML('beforeend', '' + listItem);
+					$resultsList.insertAdjacentHTML('beforeend', listItem);
 				});
 
 				$results.classList.remove('hidden');
@@ -388,9 +388,19 @@ var View = function () {
 	}, {
 		key: 'renderObject',
 		value: function renderObject(id, type) {
+			var _this2 = this;
+
 			this.showLoader(true, false);
 			this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
+				var $details = document.querySelector('#details');
 				console.log(details);
+
+				var content = '\n\t\t\t\t<img src="' + details.HoofdFoto + '" alt=' + details.Adres + '>\n\t\t\t\t<h1>' + details.Adres + '</h1>\n\t\t\t\t';
+
+				$details.insertAdjacentHTML('beforeend', content);
+
+				_this2.showLoader(false);
+				$details.classList.remove('hidden');
 			}).catch(function (err) {
 				console.log(err);
 			});
