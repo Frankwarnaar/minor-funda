@@ -40,7 +40,7 @@ var config = {
 	},
 	geoNames: {
 		baseUrl: 'http://api.geonames.org/findNearbyStreetsOSMJSON?formatted=true&style=full',
-		userName: 'demo'
+		userName: 'frankwarnaar@gmail.com'
 	}
 };
 
@@ -101,19 +101,20 @@ var App = function () {
 		}
 	}, {
 		key: 'fetchRequest',
-		value: function fetchRequest(url, callback) {
-			fetch(url).then(function (response) {
-				if (response.status !== 200) {
-					console.log('Looks like there was a problem. Status Code: ' + response.status);
-					return;
-				}
-
-				// Examine the text in the response
-				response.json().then(function (data) {
-					callback(data);
+		value: function fetchRequest(url) {
+			return new Promise(function (resolve, reject) {
+				fetch(url).then(function (response) {
+					if (response.status !== 200) {
+						reject(response.status);
+					} else {
+						// Examine the text in the response
+						response.json().then(function (data) {
+							resolve(data);
+						});
+					}
+				}).catch(function (err) {
+					reject(err);
 				});
-			}).catch(function (err) {
-				console.log('Fetch Error :-S', err);
 			});
 		}
 	}, {
@@ -259,6 +260,7 @@ var View = function () {
 			this.app.getCoords().then(function (coords) {
 				// Get the first address matching the coordinates
 				_this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName).then(function (streets) {
+					console.log(streets);
 					streets = streets.streetSegment.map(function (street) {
 						return street.name;
 					});
@@ -268,18 +270,26 @@ var View = function () {
 						city = city.results[0];
 						city = _this.buildAddress(city.address_components);
 
-						var objects = [];
+						// const objects = [];
 
-						streets.map(function (street) {
-							// Get the houses matching the address
-							_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25', function (results) {
-								console.log(results);
-								results = results.Objects;
-								objects.push(results);
-							});
+						var objectReqs = streets.map(function (street) {
+							return _this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25');
 						});
 
-						console.log(objects);
+						Promise.all(objectReqs).then(function (objects) {
+							console.log(objects);
+						});
+
+						// streets.map(street => {
+						// 	// Get the houses matching the address
+						// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`)
+						// 	.then(results => {
+						// 		console.log(results.Objects);
+						// 		objects.push(results.Objects);
+						// 	});
+						// });
+
+						// console.log(objects);
 					});
 				});
 			}).catch(function (error) {

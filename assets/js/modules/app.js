@@ -26,22 +26,23 @@ class App {
 		});
 	}
 
-	fetchRequest(url, callback) {
-		fetch(url)
-		.then(response => {
-			if (response.status !== 200) {
-				console.log('Looks like there was a problem. Status Code: ' +
-				response.status);
-				return;
-			}
+	fetchRequest(url) {
+		return new Promise((resolve, reject) => {
+			fetch(url)
+			.then(response => {
+				if (response.status !== 200) {
+					reject(response.status);
+				} else {
+					// Examine the text in the response
+					response.json().then((data) => {
+						resolve(data);
+					});
+				}
 
-			// Examine the text in the response
-			response.json().then((data) => {
-				callback(data);
+			})
+			.catch((err) => {
+				reject(err);
 			});
-		})
-		.catch((err) => {
-			console.log('Fetch Error :-S', err);
 		});
 	}
 

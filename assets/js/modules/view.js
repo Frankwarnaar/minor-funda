@@ -26,6 +26,7 @@ class View {
 				// Get the first address matching the coordinates
 				this.app.handleRequest('GET', `${this.app.config.geoNames.baseUrl}&lat=${coords.latitude}&lng=${coords.longitude}&username=${this.app.config.geoNames.userName}`)
 			.then(streets => {
+				console.log(streets);
 				streets = streets.streetSegment.map(street => {
 					return street.name;
 				});
@@ -36,18 +37,26 @@ class View {
 						city = city.results[0];
 						city = this.buildAddress(city.address_components);
 
-						const objects = [];
+						// const objects = [];
 
-						streets.map(street => {
-							// Get the houses matching the address
-							this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`, (results) => {
-								console.log(results);
-								results = results.Objects;
-								objects.push(results);
-							});
+						const objectReqs = streets.map(street => {
+							return this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`);
 						});
 
-						console.log(objects);
+						Promise.all(objectReqs).then(objects => {
+							console.log(objects);
+						});
+
+						// streets.map(street => {
+						// 	// Get the houses matching the address
+						// 	this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`)
+						// 	.then(results => {
+						// 		console.log(results.Objects);
+						// 		objects.push(results.Objects);
+						// 	});
+						// });
+
+						// console.log(objects);
 					});
 			});
 		})
