@@ -5,6 +5,11 @@ class Store {
 		this.app = app;
 	}
 
+	// getDetails(id) {
+	// 	return new Promise((resolve, reject) => {
+	// 	});
+	// }
+
 	getObjectsNearby() {
 		return new Promise((resolve, reject) => {
 			this.app.getCoords()
@@ -42,7 +47,8 @@ class Store {
 						});
 
 						// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
-						const objects = [].concat.apply([], streets);
+						let objects = [].concat.apply([], streets);
+						objects = [...new Set(objects)];
 
 						resolve(objects);
 					});

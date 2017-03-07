@@ -26,7 +26,7 @@ var config = {
 		key: '271175433a7c4fe2a45750d385dd9bfd',
 		baseUrls: {
 			search: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
-			objects: '//funda.kyrandia.nl/feeds/Aanbod.svc/json',
+			objects: '//funda.kyrandia.nl/feeds/Aanbod.svc/json/detail',
 			autoSuggest: '//zb.funda.info/frontend/json',
 			map: '//mt1.funda.nl/maptiledata.ashx/json'
 		}
@@ -184,7 +184,6 @@ var Controller = function () {
 	_createClass(Controller, [{
 		key: 'init',
 		value: function init() {
-			this.app.view.render();
 			this.router();
 		}
 	}, {
@@ -193,13 +192,14 @@ var Controller = function () {
 			var app = this.app;
 			(0, _routieMin2.default)({
 				// Detail page
-				'details/:objectId': function detailsObjectId(objectId) {
+				'details/:objectId/:type': function detailsObjectIdType(objectId, type) {
 					app.view.activatePage('#details');
-					// app.view.renderObject(objectId);
+					app.view.renderObject(objectId, type);
 				},
 
 				// Fallback to starting page
 				'*': function _() {
+					app.view.renderList();
 					app.view.activatePage('#results');
 				}
 			});
@@ -232,6 +232,11 @@ var Store = function () {
 
 		this.app = app;
 	}
+
+	// getDetails(id) {
+	// 	return new Promise((resolve, reject) => {
+	// 	});
+	// }
 
 	_createClass(Store, [{
 		key: 'getObjectsNearby',
@@ -272,6 +277,7 @@ var Store = function () {
 
 							// source array concatenation solution: http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript#answer-37469411
 							var objects = [].concat.apply([], streets);
+							objects = [].concat(_toConsumableArray(new Set(objects)));
 
 							resolve(objects);
 						});
@@ -359,22 +365,30 @@ var View = function () {
 	}
 
 	_createClass(View, [{
-		key: 'render',
-		value: function render() {
+		key: 'renderList',
+		value: function renderList() {
 			var _this = this;
 
-			this.showLoader(true);
 			this.app.store.getObjectsNearby().then(function (objects) {
 				var $results = document.querySelector('.results');
 				var $resultsList = document.querySelector('#results-list');
 
 				objects.map(function (object) {
-					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.GlobalId + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
 					$resultsList.insertAdjacentHTML('beforeend', '' + listItem);
 				});
 
 				$results.classList.remove('hidden');
 				_this.showLoader(false);
+			}).catch(function (err) {
+				console.log(err);
+			});
+		}
+	}, {
+		key: 'renderObject',
+		value: function renderObject(id, type) {
+			this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
+				console.log(details);
 			}).catch(function (err) {
 				console.log(err);
 			});

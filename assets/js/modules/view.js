@@ -5,8 +5,7 @@ class View {
 		this.app = app;
 	}
 
-	render() {
-		this.showLoader(true);
+	renderList() {
 		this.app.store.getObjectsNearby()
 			.then(objects => {
 				const $results = document.querySelector('.results');
@@ -16,7 +15,7 @@ class View {
 					const listItem = `
 					<li class="object">
 						<img src="${object.FotoLarge}" alt="${object.Adres}">
-						<a href="#details/${object.GlobalId}"><h3>${object.Adres}</h3></a>
+						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
 						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
 					</li>
 					`;
@@ -25,6 +24,16 @@ class View {
 
 				$results.classList.remove('hidden');
 				this.showLoader(false);
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
+
+	renderObject(id, type) {
+		this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
+			.then(details => {
+				console.log(details);
 			})
 			.catch(err => {
 				console.log(err);

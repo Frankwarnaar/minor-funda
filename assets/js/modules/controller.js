@@ -8,7 +8,6 @@ class Controller {
 	}
 
 	init() {
-		this.app.view.render();
 		this.router();
 	}
 
@@ -16,12 +15,13 @@ class Controller {
 		const app = this.app;
 		routie({
 			// Detail page
-			'details/:objectId'(objectId) {
+			'details/:objectId/:type'(objectId, type) {
 				app.view.activatePage('#details');
-				// app.view.renderObject(objectId);
+				app.view.renderObject(objectId, type);
 			},
 			// Fallback to starting page
 			'*'() {
+				app.view.renderList();
 				app.view.activatePage(`#results`);
 			}
 		});
