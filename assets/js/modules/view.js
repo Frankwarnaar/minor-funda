@@ -6,6 +6,7 @@ class View {
 	}
 
 	renderList() {
+		this.showLoader(true, true);
 		this.app.store.getObjectsNearby()
 			.then(objects => {
 				const $results = document.querySelector('.results');
@@ -31,6 +32,7 @@ class View {
 	}
 
 	renderObject(id, type) {
+		this.showLoader(true, false);
 		this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
 				console.log(details);
@@ -52,12 +54,20 @@ class View {
 		});
 	}
 
-	showLoader(show) {
+	showLoader(show, content) {
 		const loader =  document.querySelector('.loader-container');
+		const description =  document.querySelector('.loader-container p');
+
 		if (show) {
 			loader.classList.remove('hidden');
 		} else {
 			loader.classList.add('hidden');
+		}
+
+		if (content) {
+			description.classList.remove('hidden');
+		} else {
+			description.classList.add('hidden');
 		}
 	}
 }

@@ -369,6 +369,7 @@ var View = function () {
 		value: function renderList() {
 			var _this = this;
 
+			this.showLoader(true, true);
 			this.app.store.getObjectsNearby().then(function (objects) {
 				var $results = document.querySelector('.results');
 				var $resultsList = document.querySelector('#results-list');
@@ -387,6 +388,7 @@ var View = function () {
 	}, {
 		key: 'renderObject',
 		value: function renderObject(id, type) {
+			this.showLoader(true, false);
 			this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
 				console.log(details);
 			}).catch(function (err) {
@@ -410,12 +412,20 @@ var View = function () {
 		}
 	}, {
 		key: 'showLoader',
-		value: function showLoader(show) {
+		value: function showLoader(show, content) {
 			var loader = document.querySelector('.loader-container');
+			var description = document.querySelector('.loader-container p');
+
 			if (show) {
 				loader.classList.remove('hidden');
 			} else {
 				loader.classList.add('hidden');
+			}
+
+			if (content) {
+				description.classList.remove('hidden');
+			} else {
+				description.classList.add('hidden');
 			}
 		}
 	}]);
