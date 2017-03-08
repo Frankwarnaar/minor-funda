@@ -9,7 +9,7 @@ class View {
 		const $results = document.querySelector('.results');
 		const $resultsList = document.querySelector('#results-list');
 
-		// if ($resultsList.innerHTML.length === 0) {
+		if ($resultsList.innerHTML.length === 0) {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby()
 			.then(objects => {
@@ -33,7 +33,7 @@ class View {
 			.catch(err => {
 				console.log(err);
 			});
-		// }
+		}
 	}
 
 	renderObject(id, type) {

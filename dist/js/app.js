@@ -373,23 +373,23 @@ var View = function () {
 			var $results = document.querySelector('.results');
 			var $resultsList = document.querySelector('#results-list');
 
-			// if ($resultsList.innerHTML.length === 0) {
-			this.showLoader(true, true);
-			this.app.store.getObjectsNearby().then(function (objects) {
-				console.log(objects);
+			if ($resultsList.innerHTML.length === 0) {
+				this.showLoader(true, true);
+				this.app.store.getObjectsNearby().then(function (objects) {
+					console.log(objects);
 
-				objects.map(function (object) {
-					var listItem = '\n\t\t\t\t\t<li>\n\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+					objects.map(function (object) {
+						var listItem = '\n\t\t\t\t\t<li>\n\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
 
-					$resultsList.insertAdjacentHTML('beforeend', listItem);
+						$resultsList.insertAdjacentHTML('beforeend', listItem);
+					});
+
+					$results.classList.remove('hidden');
+					_this.showLoader(false);
+				}).catch(function (err) {
+					console.log(err);
 				});
-
-				$results.classList.remove('hidden');
-				_this.showLoader(false);
-			}).catch(function (err) {
-				console.log(err);
-			});
-			// }
+			}
 		}
 	}, {
 		key: 'renderObject',

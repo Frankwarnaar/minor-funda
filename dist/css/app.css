@@ -306,10 +306,20 @@ ol {
 }
 .navigation a {
   height: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  transition: 0.1s ease-in-out;
+}
+.navigation a:hover {
+  filter: hue-rotate(50deg);
+}
+.navigation a:focus {
+  border-color: #fff;
 }
 .navigation a img {
   padding: .325rem 0;
-  height: 2.35rem;
+  height: calc(3rem - 2 * .325rem - 4px);
 }
 section {
   margin: 1rem;
@@ -371,6 +381,11 @@ section {
 @media screen and (min-width: 48.01rem ) {
   .object > section {
     width: 50%;
+  }
+}
+@media screen and (min-width: 48.01rem ) {
+  .object > section:nth-child(2) {
+    max-width: 40em;
   }
 }
 @media screen and (min-width: 48.01rem ) {

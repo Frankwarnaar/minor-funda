@@ -18,10 +18,23 @@
 
 	a {
 		height: 100%;
+		display: inline-block;
+		box-sizing: border-box;
+		
+		border: 2px solid transparent;
+		transition: @transition-fastest;
+
+		&:hover {
+			filter: hue-rotate(50deg);
+		}
+
+		&:focus {
+			border-color: @color-lightest;
+		}
 
 		img {
 			padding: .325rem 0;
-			height: @nav-height - 2 * .325rem;
+			height: ~"calc(@{nav-height} - 2 * .325rem - 4px)";
 		}
 	}
 }
