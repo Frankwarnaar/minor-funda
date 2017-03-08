@@ -9,12 +9,12 @@ class View {
 		const $results = document.querySelector('.results');
 		const $resultsList = document.querySelector('#results-list');
 
+		// Check if there aren't any objects rendered yet
 		if ($resultsList.innerHTML.length === 0) {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby()
 			.then(objects => {
-				console.log(objects);
-
+				// Render all the objects
 				objects.map(object => {
 					const listItem = `
 					<li>
@@ -38,15 +38,18 @@ class View {
 
 	renderObject(id, type) {
 		const $details = document.querySelector('#details');
+		// Check if the object isn't already rendered.
 		if (this.app.store.lastDetailPage !== id) {
 			this.clearView($details);
 			this.showLoader(true, false);
+			// Get details
 			this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
 				this.app.store.lastDetailPage = id;
 
 				console.log(details);
 
+				// Get all the medium images of an object
 				let gallery = '';
 				details.Media.map(picture => {
 					picture.MediaItems.map(source => {
@@ -56,11 +59,13 @@ class View {
 					});
 				});
 
+				// Filter description
 				let descriptions = details.VolledigeOmschrijving.split('\n');
 				descriptions = descriptions.filter(item => {
 					return item.length > 0;
 				});
 
+				// Structure description
 				const description = descriptions.reduce((buffer, item) => {
 					if (item[0] === '-') {
 						return `${buffer} <li>${item.substr(1, item.length - 1)}</li>`;
@@ -71,6 +76,7 @@ class View {
 					}
 				});
 
+				// Set content
 				const content = `
 				<section class="object__images">
 					<img src="${details.HoofdFoto}" alt=${details.Adres}>

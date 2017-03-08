@@ -373,11 +373,11 @@ var View = function () {
 			var $results = document.querySelector('.results');
 			var $resultsList = document.querySelector('#results-list');
 
+			// Check if there aren't any objects rendered yet
 			if ($resultsList.innerHTML.length === 0) {
 				this.showLoader(true, true);
 				this.app.store.getObjectsNearby().then(function (objects) {
-					console.log(objects);
-
+					// Render all the objects
 					objects.map(function (object) {
 						var listItem = '\n\t\t\t\t\t<li>\n\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
 
@@ -397,14 +397,17 @@ var View = function () {
 			var _this2 = this;
 
 			var $details = document.querySelector('#details');
+			// Check if the object isn't already rendered.
 			if (this.app.store.lastDetailPage !== id) {
 				this.clearView($details);
 				this.showLoader(true, false);
+				// Get details
 				this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
 					_this2.app.store.lastDetailPage = id;
 
 					console.log(details);
 
+					// Get all the medium images of an object
 					var gallery = '';
 					details.Media.map(function (picture) {
 						picture.MediaItems.map(function (source) {
@@ -414,11 +417,13 @@ var View = function () {
 						});
 					});
 
+					// Filter description
 					var descriptions = details.VolledigeOmschrijving.split('\n');
 					descriptions = descriptions.filter(function (item) {
 						return item.length > 0;
 					});
 
+					// Structure description
 					var description = descriptions.reduce(function (buffer, item) {
 						if (item[0] === '-') {
 							return buffer + ' <li>' + item.substr(1, item.length - 1) + '</li>';
@@ -429,6 +434,7 @@ var View = function () {
 						}
 					});
 
+					// Set content
 					var content = '\n\t\t\t\t<section class="object__images">\n\t\t\t\t\t<img src="' + details.HoofdFoto + '" alt=' + details.Adres + '>\n\t\t\t\t\t<section>\n\t\t\t\t\t\t' + gallery + '\n\t\t\t\t\t</section>\n\t\t\t\t</section>\n\t\t\t\t<section>\n\t\t\t\t\t<h1>' + details.Adres + '</h1>\n\t\t\t\t\t<p>' + description + '</p>\n\t\t\t\t</section>\n\t\t\t\t';
 
 					$details.insertAdjacentHTML('beforeend', content);
