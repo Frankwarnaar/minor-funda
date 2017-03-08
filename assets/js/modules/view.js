@@ -15,9 +15,7 @@ class View {
 			this.app.store.getObjectsNearby()
 			.then(objects => {
 				if (objects.length > 0) {
-				// if (false) {
 					// Render all the objects
-
 					objects.map(object => {
 						const $listItem = `
 						<li>
@@ -38,6 +36,11 @@ class View {
 			})
 			.catch(err => {
 				console.log(err);
+
+				$results.insertAdjacentHTML('beforeend', 'Er is iets mis gegaan bij het ophalen van huizen in uw buurt. Probeer het later nog eens.');
+				
+				this.showElement($results, true);
+				this.showLoader(false);
 			});
 		}
 	}
