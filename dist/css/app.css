@@ -362,3 +362,38 @@ section {
     margin-right: 0;
   }
 }
+.object {
+  flex-direction: column;
+}
+.object > section {
+  width: 100%;
+}
+@media screen and (min-width: 48.01rem ) {
+  .object > section {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 48.01rem ) {
+  .object {
+    flex-direction: row;
+  }
+}
+.object:not(.hidden) {
+  display: flex;
+}
+.object__images {
+  padding: 0;
+  margin: 0;
+}
+.object__images > img {
+  width: 100%;
+}
+.object__images section {
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  overflow-y: auto;
+}
+.object__images section img {
+  margin: .5rem;
+}

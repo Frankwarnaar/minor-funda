@@ -1,0 +1,39 @@
+.object {
+	flex-direction: column;
+
+	> section {
+		width: 100%;
+
+		@media @q-md-min {
+			width: 50%;
+		}
+	}
+
+	@media @q-md-min {
+		flex-direction: row;
+	}
+}
+
+.object:not(.hidden) {
+	display: flex;
+}
+
+.object__images {
+	padding: 0;
+	margin: 0;
+
+	> img {
+		width: 100%;
+	}
+
+	section {
+		margin-left: 0;
+		margin-right: 0;
+		display: flex;
+		overflow-y: auto;
+
+		img {
+			margin: .5rem;
+		}
+	}
+}

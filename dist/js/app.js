@@ -233,36 +233,36 @@ var Store = function () {
 		this.app = app;
 	}
 
-	// getDetails(id) {
-	// 	return new Promise((resolve, reject) => {
-	// 	});
-	// }
-
 	_createClass(Store, [{
 		key: 'getObjectsNearby',
 		value: function getObjectsNearby() {
 			var _this = this;
 
 			return new Promise(function (resolve, reject) {
+				// Get coordinates of users location
 				_this.app.getCoords().then(function (coords) {
-					// Get the first address matching the coordinates
-
+					// Get streets nearby location
 					var getStreets = _this.app.handleRequest('GET', _this.app.config.geoNames.baseUrl + '&lat=' + coords.latitude + '&lng=' + coords.longitude + '&username=' + _this.app.config.geoNames.userName);
+					// Get city matching users location
 					var getCity = _this.app.handleRequest('GET', _this.app.config.google.baseUrls.maps + '?latlng=' + coords.latitude + ',' + coords.longitude + '&key=' + _this.app.config.google.key);
 
+					// Fire api requests parallel
 					Promise.all([getStreets, getCity]).then(function (results) {
 						var streets = results[0];
 						var city = results[1];
 
+						// Clean the streetnames returned by geoNames API
 						streets = streets.streetSegment.map(function (street) {
 							return street.name;
 						});
 						streets = [].concat(_toConsumableArray(new Set(streets)));
 						streets = _this.app.utils.filterArray(streets, '0');
 
+						// Cleanup the city return by Google API
 						city = city.results[0];
 						city = _this.app.utils.buildAddress(city.address_components);
 
+						// Get all the objects on the streets nearby
 						var objectReqs = [];
 						streets.map(function (street) {
 							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=koop&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
@@ -270,6 +270,7 @@ var Store = function () {
 							objectReqs.push(_this.app.fetchRequest(_this.app.config.funda.baseUrls.search + '/' + _this.app.config.funda.key + '?type=huur&zo=/' + city + '/' + street + '&page=1&pagesize=25'));
 						});
 
+						// Fire all the API calls parallel
 						Promise.all(objectReqs).then(function (results) {
 							var streets = results.map(function (street) {
 								return street.Objects;
@@ -369,13 +370,17 @@ var View = function () {
 		value: function renderList() {
 			var _this = this;
 
+			var $results = document.querySelector('.results');
+			var $resultsList = document.querySelector('#results-list');
+
+			// if ($resultsList.innerHTML.length === 0) {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby().then(function (objects) {
-				var $results = document.querySelector('.results');
-				var $resultsList = document.querySelector('#results-list');
+				console.log(objects);
 
 				objects.map(function (object) {
-					var listItem = '\n\t\t\t\t\t<li class="object">\n\t\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+					var listItem = '\n\t\t\t\t\t<li>\n\t\t\t\t\t<img src="' + object.FotoLarge + '" alt="' + object.Adres + '">\n\t\t\t\t\t<a href="#details/' + object.Id + '/' + (object.Koopprijs ? 'koop' : 'huur') + '"><h3>' + object.Adres + '</h3></a>\n\t\t\t\t\t<span>\u20AC' + (object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m') + '</span>\n\t\t\t\t\t</li>\n\t\t\t\t\t';
+
 					$resultsList.insertAdjacentHTML('beforeend', listItem);
 				});
 
@@ -384,26 +389,61 @@ var View = function () {
 			}).catch(function (err) {
 				console.log(err);
 			});
+			// }
 		}
 	}, {
 		key: 'renderObject',
 		value: function renderObject(id, type) {
 			var _this2 = this;
 
-			this.showLoader(true, false);
-			this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
-				var $details = document.querySelector('#details');
-				console.log(details);
+			var $details = document.querySelector('#details');
+			if (this.app.store.lastDetailPage !== id) {
+				this.clearView($details);
+				this.showLoader(true, false);
+				this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
+					_this2.app.store.lastDetailPage = id;
 
-				var content = '\n\t\t\t\t<img src="' + details.HoofdFoto + '" alt=' + details.Adres + '>\n\t\t\t\t<h1>' + details.Adres + '</h1>\n\t\t\t\t';
+					console.log(details);
 
-				$details.insertAdjacentHTML('beforeend', content);
+					var gallery = '';
+					details.Media.map(function (picture) {
+						picture.MediaItems.map(function (source) {
+							if (source.Url.includes('middel')) {
+								gallery += '<img src="' + source.Url + '" alt="' + details.Adres + '">';
+							}
+						});
+					});
 
-				_this2.showLoader(false);
-				$details.classList.remove('hidden');
-			}).catch(function (err) {
-				console.log(err);
-			});
+					var descriptions = details.VolledigeOmschrijving.split('\n');
+					descriptions = descriptions.filter(function (item) {
+						return item.length > 0;
+					});
+
+					var description = descriptions.reduce(function (buffer, item) {
+						if (item[0] === '-') {
+							return buffer + ' <li>' + item.substr(1, item.length - 1) + '</li>';
+						}if (item[item.length - 2] === ':') {
+							return buffer + ' <h2>' + item + '</h2>';
+						} else {
+							return buffer + ' <p>' + item + '</p>';
+						}
+					});
+
+					var content = '\n\t\t\t\t<section class="object__images">\n\t\t\t\t\t<img src="' + details.HoofdFoto + '" alt=' + details.Adres + '>\n\t\t\t\t\t<section>\n\t\t\t\t\t\t' + gallery + '\n\t\t\t\t\t</section>\n\t\t\t\t</section>\n\t\t\t\t<section>\n\t\t\t\t\t<h1>' + details.Adres + '</h1>\n\t\t\t\t\t<p>' + description + '</p>\n\t\t\t\t</section>\n\t\t\t\t';
+
+					$details.insertAdjacentHTML('beforeend', content);
+
+					_this2.showLoader(false);
+					$details.classList.remove('hidden');
+				}).catch(function (err) {
+					console.log(err);
+				});
+			}
+		}
+	}, {
+		key: 'clearView',
+		value: function clearView($el) {
+			$el.innerHTML = '';
 		}
 
 		// Make the current page visible and all the other invisible

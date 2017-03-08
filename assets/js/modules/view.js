@@ -6,20 +6,24 @@ class View {
 	}
 
 	renderList() {
-		this.showLoader(true, true);
-		this.app.store.getObjectsNearby()
+		const $results = document.querySelector('.results');
+		const $resultsList = document.querySelector('#results-list');
+
+		// if ($resultsList.innerHTML.length === 0) {
+			this.showLoader(true, true);
+			this.app.store.getObjectsNearby()
 			.then(objects => {
-				const $results = document.querySelector('.results');
-				const $resultsList = document.querySelector('#results-list');
+				console.log(objects);
 
 				objects.map(object => {
 					const listItem = `
-					<li class="object">
-						<img src="${object.FotoLarge}" alt="${object.Adres}">
-						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
-						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
+					<li>
+					<img src="${object.FotoLarge}" alt="${object.Adres}">
+					<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
+					<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
 					</li>
 					`;
+
 					$resultsList.insertAdjacentHTML('beforeend', listItem);
 				});
 
@@ -29,18 +33,55 @@ class View {
 			.catch(err => {
 				console.log(err);
 			});
+		// }
 	}
 
 	renderObject(id, type) {
-		this.showLoader(true, false);
-		this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
+		const $details = document.querySelector('#details');
+		if (this.app.store.lastDetailPage !== id) {
+			this.clearView($details);
+			this.showLoader(true, false);
+			this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
-				const $details = document.querySelector('#details');
+				this.app.store.lastDetailPage = id;
+
 				console.log(details);
 
+				let gallery = '';
+				details.Media.map(picture => {
+					picture.MediaItems.map(source => {
+						if (source.Url.includes('middel')) {
+							gallery += `<img src="${source.Url}" alt="${details.Adres}">`;
+						}
+					});
+				});
+
+				let descriptions = details.VolledigeOmschrijving.split('\n');
+				descriptions = descriptions.filter(item => {
+					return item.length > 0;
+				});
+
+				const description = descriptions.reduce((buffer, item) => {
+					if (item[0] === '-') {
+						return `${buffer} <li>${item.substr(1, item.length - 1)}</li>`;
+					} if (item[item.length - 2] === ':') {
+						return `${buffer} <h2>${item}</h2>`;
+					} else {
+						return `${buffer} <p>${item}</p>`;
+					}
+				});
+
 				const content = `
-				<img src="${details.HoofdFoto}" alt=${details.Adres}>
-				<h1>${details.Adres}</h1>
+				<section class="object__images">
+					<img src="${details.HoofdFoto}" alt=${details.Adres}>
+					<section>
+						${gallery}
+					</section>
+				</section>
+				<section>
+					<h1>${details.Adres}</h1>
+					<p>${description}</p>
+				</section>
 				`;
 
 				$details.insertAdjacentHTML('beforeend', content);
@@ -51,6 +92,11 @@ class View {
 			.catch(err => {
 				console.log(err);
 			});
+		}
+	}
+
+	clearView($el) {
+		$el.innerHTML = '';
 	}
 
 	// Make the current page visible and all the other invisible
