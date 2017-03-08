@@ -27,7 +27,7 @@ class View {
 					$resultsList.insertAdjacentHTML('beforeend', listItem);
 				});
 
-				$results.classList.remove('hidden');
+				this.showElement($results, true);
 				this.showLoader(false);
 			})
 			.catch(err => {
@@ -38,6 +38,10 @@ class View {
 
 	renderObject(id, type) {
 		const $details = document.querySelector('#details');
+		const $imageContainer = document.querySelector('#image');
+
+		this.app.view.showElement($imageContainer, false);
+
 		// Check if the object isn't already rendered.
 		if (this.app.store.lastDetailPage !== id) {
 			this.clearView($details);
@@ -95,7 +99,7 @@ class View {
 				$details.insertAdjacentHTML('beforeend', content);
 
 				this.showLoader(false);
-				$details.classList.remove('hidden');
+				this.showElement($details, true);
 			})
 			.catch(err => {
 				console.log(err);
@@ -105,7 +109,27 @@ class View {
 
 	renderImage(url) {
 		const $imageContainer = document.querySelector('#image');
-		this.clearView($imageContainer);
+		const $closeButton = document.querySelector('#image a');
+		const $lastImg = document.querySelector('#image img');
+
+		if ($lastImg) {
+			$imageContainer.removeChild($lastImg);
+		}
+
+		if (this.app.store.lastLocation) {
+			$closeButton.setAttribute('href', this.app.store.lastLocation);
+		}
+
+		$imageContainer.insertAdjacentHTML('beforeend', `<img src="${url}"/>`);
+		this.showElement($imageContainer, true);
+	}
+
+	showElement($el, show) {
+		if (show) {
+			$el.classList.remove('hidden');
+		} else{
+			$el.classList.add('hidden');
+		}
 	}
 
 	clearView($el) {
@@ -117,28 +141,19 @@ class View {
 		const $pages = Array.from(document.querySelectorAll('[data-page]'));
 		$pages.forEach($page => {
 			if (`#${$page.getAttribute('id')}` === route) {
-				$page.classList.remove('hidden');
+				this.showElement($page, true);
 			} else {
-				$page.classList.add('hidden');
+				this.showElement($page, false);
 			}
 		});
 	}
 
 	showLoader(show, content) {
-		const loader =  document.querySelector('.loader-container');
-		const description =  document.querySelector('.loader-container p');
+		const $loader =  document.querySelector('.loader-container');
+		const $description =  document.querySelector('.loader-container p');
 
-		if (show) {
-			loader.classList.remove('hidden');
-		} else {
-			loader.classList.add('hidden');
-		}
-
-		if (content) {
-			description.classList.remove('hidden');
-		} else {
-			description.classList.add('hidden');
-		}
+		this.showElement($loader, show);
+		this.showElement($description, content);
 	}
 }
 

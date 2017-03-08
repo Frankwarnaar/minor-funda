@@ -9,6 +9,15 @@ class Controller {
 
 	init() {
 		this.router();
+		this.imageViewer();
+	}
+
+	imageViewer() {
+		const $imageContainer = document.querySelector('#image');
+		const $closeImage = document.querySelector('#image a');
+		$closeImage.addEventListener('click', () => {
+			this.app.view.showElement($imageContainer, false);
+		});
 	}
 
 	router() {
@@ -16,8 +25,12 @@ class Controller {
 		routie({
 			// Detail page
 			'details/:objectId/:type'(objectId, type) {
+				const hash = window.location.hash;
+
 				app.view.activatePage('#details');
 				app.view.renderObject(objectId, type);
+
+				app.store.lastLocation = hash;
 			},
 			// Fallback to starting page
 			'*'() {
@@ -29,9 +42,10 @@ class Controller {
 				} else {
 					app.view.renderList();
 					app.view.activatePage(`#results`);
+					app.view.showElement(document.querySelector('#image'), false);
+					app.store.lastLocation = hash;
 				}
 
-				app.store.lastLocation = hash;
 			}
 		});
 	}

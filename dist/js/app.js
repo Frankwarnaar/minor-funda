@@ -185,6 +185,18 @@ var Controller = function () {
 		key: 'init',
 		value: function init() {
 			this.router();
+			this.imageViewer();
+		}
+	}, {
+		key: 'imageViewer',
+		value: function imageViewer() {
+			var _this = this;
+
+			var $imageContainer = document.querySelector('#image');
+			var $closeImage = document.querySelector('#image a');
+			$closeImage.addEventListener('click', function () {
+				_this.app.view.showElement($imageContainer, false);
+			});
 		}
 	}, {
 		key: 'router',
@@ -193,8 +205,12 @@ var Controller = function () {
 			(0, _routieMin2.default)({
 				// Detail page
 				'details/:objectId/:type': function detailsObjectIdType(objectId, type) {
+					var hash = window.location.hash;
+
 					app.view.activatePage('#details');
 					app.view.renderObject(objectId, type);
+
+					app.store.lastLocation = hash;
 				},
 
 				// Fallback to starting page
@@ -207,9 +223,9 @@ var Controller = function () {
 					} else {
 						app.view.renderList();
 						app.view.activatePage('#results');
+						app.view.showElement(document.querySelector('#image'), false);
+						app.store.lastLocation = hash;
 					}
-
-					app.store.lastLocation = hash;
 				}
 			});
 		}
@@ -386,7 +402,7 @@ var View = function () {
 						$resultsList.insertAdjacentHTML('beforeend', listItem);
 					});
 
-					$results.classList.remove('hidden');
+					_this.showElement($results, true);
 					_this.showLoader(false);
 				}).catch(function (err) {
 					console.log(err);
@@ -399,6 +415,10 @@ var View = function () {
 			var _this2 = this;
 
 			var $details = document.querySelector('#details');
+			var $imageContainer = document.querySelector('#image');
+
+			this.app.view.showElement($imageContainer, false);
+
 			// Check if the object isn't already rendered.
 			if (this.app.store.lastDetailPage !== id) {
 				this.clearView($details);
@@ -444,7 +464,7 @@ var View = function () {
 					$details.insertAdjacentHTML('beforeend', content);
 
 					_this2.showLoader(false);
-					$details.classList.remove('hidden');
+					_this2.showElement($details, true);
 				}).catch(function (err) {
 					console.log(err);
 				});
@@ -454,7 +474,28 @@ var View = function () {
 		key: 'renderImage',
 		value: function renderImage(url) {
 			var $imageContainer = document.querySelector('#image');
-			this.clearView($imageContainer);
+			var $closeButton = document.querySelector('#image a');
+			var $lastImg = document.querySelector('#image img');
+
+			if ($lastImg) {
+				$imageContainer.removeChild($lastImg);
+			}
+
+			if (this.app.store.lastLocation) {
+				$closeButton.setAttribute('href', this.app.store.lastLocation);
+			}
+
+			$imageContainer.insertAdjacentHTML('beforeend', '<img src="' + url + '"/>');
+			this.showElement($imageContainer, true);
+		}
+	}, {
+		key: 'showElement',
+		value: function showElement($el, show) {
+			if (show) {
+				$el.classList.remove('hidden');
+			} else {
+				$el.classList.add('hidden');
+			}
 		}
 	}, {
 		key: 'clearView',
@@ -467,32 +508,25 @@ var View = function () {
 	}, {
 		key: 'activatePage',
 		value: function activatePage(route) {
+			var _this3 = this;
+
 			var $pages = Array.from(document.querySelectorAll('[data-page]'));
 			$pages.forEach(function ($page) {
 				if ('#' + $page.getAttribute('id') === route) {
-					$page.classList.remove('hidden');
+					_this3.showElement($page, true);
 				} else {
-					$page.classList.add('hidden');
+					_this3.showElement($page, false);
 				}
 			});
 		}
 	}, {
 		key: 'showLoader',
 		value: function showLoader(show, content) {
-			var loader = document.querySelector('.loader-container');
-			var description = document.querySelector('.loader-container p');
+			var $loader = document.querySelector('.loader-container');
+			var $description = document.querySelector('.loader-container p');
 
-			if (show) {
-				loader.classList.remove('hidden');
-			} else {
-				loader.classList.add('hidden');
-			}
-
-			if (content) {
-				description.classList.remove('hidden');
-			} else {
-				description.classList.add('hidden');
-			}
+			this.showElement($loader, show);
+			this.showElement($description, content);
 		}
 	}]);
 
