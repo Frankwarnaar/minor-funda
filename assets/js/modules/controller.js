@@ -21,8 +21,17 @@ class Controller {
 			},
 			// Fallback to starting page
 			'*'() {
-				app.view.renderList();
-				app.view.activatePage(`#results`);
+				const hash =  window.location.hash;
+
+				if (hash.includes('image')) {
+					const imageUrl = hash.substr(7, hash.length - 1);
+					app.view.renderImage(imageUrl);
+				} else {
+					app.view.renderList();
+					app.view.activatePage(`#results`);
+				}
+
+				app.store.lastLocation = hash;
 			}
 		});
 	}

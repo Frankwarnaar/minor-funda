@@ -30,7 +30,7 @@ class Store {
 
 					// Cleanup the city return by Google API
 					city = city.results[0];
-					city = this.app.utils.buildAddress(city.address_components);
+					city = this.app.utils.getStreet(city.address_components);
 
 					// Get all the objects on the streets nearby
 					const objectReqs = [];

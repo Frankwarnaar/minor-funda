@@ -47,14 +47,16 @@ class View {
 			.then(details => {
 				this.app.store.lastDetailPage = id;
 
-				console.log(details);
-
 				// Get all the medium images of an object
 				let gallery = '';
 				details.Media.map(picture => {
+					const bigPic = picture.MediaItems.filter(source => {
+						return source.Url.includes('grotere');
+					});
+
 					picture.MediaItems.map(source => {
 						if (source.Url.includes('middel')) {
-							gallery += `<img src="${source.Url}" alt="${details.Adres}">`;
+							gallery += `<a href="#image/${bigPic[0].Url}"><img src="${source.Url}" alt="${details.Adres}"></a>`;
 						}
 					});
 				});
@@ -99,6 +101,11 @@ class View {
 				console.log(err);
 			});
 		}
+	}
+
+	renderImage(url) {
+		const $imageContainer = document.querySelector('#image');
+		this.clearView($imageContainer);
 	}
 
 	clearView($el) {

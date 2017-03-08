@@ -199,8 +199,17 @@ var Controller = function () {
 
 				// Fallback to starting page
 				'*': function _() {
-					app.view.renderList();
-					app.view.activatePage('#results');
+					var hash = window.location.hash;
+
+					if (hash.includes('image')) {
+						var imageUrl = hash.substr(7, hash.length - 1);
+						app.view.renderImage(imageUrl);
+					} else {
+						app.view.renderList();
+						app.view.activatePage('#results');
+					}
+
+					app.store.lastLocation = hash;
 				}
 			});
 		}
@@ -260,7 +269,7 @@ var Store = function () {
 
 						// Cleanup the city return by Google API
 						city = city.results[0];
-						city = _this.app.utils.buildAddress(city.address_components);
+						city = _this.app.utils.getStreet(city.address_components);
 
 						// Get all the objects on the streets nearby
 						var objectReqs = [];
@@ -313,20 +322,13 @@ var Utils = function () {
 	}
 
 	_createClass(Utils, [{
-		key: 'buildAddress',
-		value: function buildAddress(components) {
+		key: 'getStreet',
+		value: function getStreet(components) {
 			components = components.filter(function (component) {
-				// return component.types.includes('route') || component.types.includes('locality');
 				return component.types.includes('locality');
 			});
 
-			components = components.map(function (component) {
-				return component.long_name;
-			});
-
-			return components.reduce(function (buffer, current) {
-				return buffer + '/' + current;
-			});
+			return components[0].long_name;
 		}
 
 		// Remove item from array if it contains a subtring
@@ -405,14 +407,16 @@ var View = function () {
 				this.app.fetchRequest(this.app.config.funda.baseUrls.objects + '/' + this.app.config.funda.key + '/' + type + '/' + id).then(function (details) {
 					_this2.app.store.lastDetailPage = id;
 
-					console.log(details);
-
 					// Get all the medium images of an object
 					var gallery = '';
 					details.Media.map(function (picture) {
+						var bigPic = picture.MediaItems.filter(function (source) {
+							return source.Url.includes('grotere');
+						});
+
 						picture.MediaItems.map(function (source) {
 							if (source.Url.includes('middel')) {
-								gallery += '<img src="' + source.Url + '" alt="' + details.Adres + '">';
+								gallery += '<a href="#image/' + bigPic[0].Url + '"><img src="' + source.Url + '" alt="' + details.Adres + '"></a>';
 							}
 						});
 					});
@@ -445,6 +449,12 @@ var View = function () {
 					console.log(err);
 				});
 			}
+		}
+	}, {
+		key: 'renderImage',
+		value: function renderImage(url) {
+			var $imageContainer = document.querySelector('#image');
+			this.clearView($imageContainer);
 		}
 	}, {
 		key: 'clearView',
