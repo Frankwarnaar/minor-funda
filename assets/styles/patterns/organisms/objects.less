@@ -38,17 +38,37 @@
 
 	a {
 		display: block;
-		width: ~"calc(20% - .8rem)";
+		width: ~"calc(33.33% - .667rem)";
 		margin: 0 .5rem;
 		box-sizing: border-box;
 	}
 
-	a:nth-child(5n - 4) {
-		margin-left: 0;
+	a:hover {
+		opacity: .8;
 	}
 
-	a:nth-child(5n) {
-		margin-right: 0;
+	@media @q-md-max {
+		a:nth-child(3n - 2) {
+			margin-left: 0;
+		}
+
+		a:nth-child(3n) {
+			margin-right: 0;
+		}
+	}
+
+	@media @q-md-min {
+		a {
+			width: ~"calc(20% - .8rem)";
+		}
+
+		a:nth-child(5n - 4) {
+			margin-left: 0;
+		}
+
+		a:nth-child(5n) {
+			margin-right: 0;
+		}
 	}
 
 	> img {

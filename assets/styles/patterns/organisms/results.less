@@ -12,6 +12,7 @@
 	}
 
 	li {
+		padding: 1rem;
 		width: 100%;
 		box-sizing: border-box;
 		position: relative;
@@ -41,6 +42,8 @@
 		@media @q-md-min {
 			margin: .5rem;
 			width: ~"calc(33.33% - .667rem)";
+			border: 1px solid @color-lightest;
+			border-radius: 2px;
 
 			&:nth-child(3n - 2) {
 				margin-left: 0;
@@ -49,6 +52,10 @@
 			&:nth-child(3n) {
 				margin-right: 0;
 			}
+		}
+
+		&:hover {
+			background: @color-lightest;
 		}
 	}
 }

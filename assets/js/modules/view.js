@@ -14,19 +14,25 @@ class View {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby()
 			.then(objects => {
-				// Render all the objects
-				objects.map(object => {
-					const listItem = `
-					<li>
-					<img src="${object.FotoLarge}" alt="${object.Adres}">
-					<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
-					<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
-					</li>
-					`;
+				if (objects.length > 0) {
+				// if (false) {
+					// Render all the objects
 
-					$resultsList.insertAdjacentHTML('beforeend', listItem);
-				});
+					objects.map(object => {
+						const $listItem = `
+						<li>
+						<img src="${object.FotoLarge}" alt="${object.Adres}">
+						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
+						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
+						</li>
+						`;
 
+						$resultsList.insertAdjacentHTML('beforeend', $listItem);
+					});
+
+				} else {
+					$results.insertAdjacentHTML('beforeend', 'Er zijn geen resultaten gevonden in uw buurt.');
+				}
 				this.showElement($results, true);
 				this.showLoader(false);
 			})
