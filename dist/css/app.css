@@ -299,7 +299,8 @@ a span {
   color: #fff;
   text-decoration: none;
 }
-.image-viewer a:hover {
+.image-viewer a:hover,
+.image-viewer a:focus {
   background: #fff;
   color: #F7A100;
 }
@@ -415,6 +416,14 @@ section {
 }
 .object {
   flex-direction: column;
+}
+.object section {
+  margin: 0;
+}
+@media screen and (min-width: 48.01rem ) {
+  .object section {
+    margin: 1rem;
+  }
 }
 .object > section {
   width: 100%;

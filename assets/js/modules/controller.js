@@ -15,6 +15,7 @@ class Controller {
 	imageViewer() {
 		const $imageContainer = document.querySelector('#image');
 		const $closeImage = document.querySelector('#image a');
+
 		$closeImage.addEventListener('click', () => {
 			this.app.view.showElement($imageContainer, false);
 		});
@@ -34,7 +35,7 @@ class Controller {
 			},
 			// Fallback to starting page
 			'*'() {
-				const hash =  window.location.hash;
+				const hash = window.location.hash;
 
 				if (hash.includes('image')) {
 					const imageUrl = hash.substr(7, hash.length - 1);
@@ -43,7 +44,9 @@ class Controller {
 					app.view.renderList();
 					app.view.activatePage(`#results`);
 					app.view.showElement(document.querySelector('#image'), false);
-					app.store.lastLocation = hash;
+					if (hash !== app.store.lastLocation) {
+						app.store.lastLocation = hash;
+					}
 				}
 
 			}

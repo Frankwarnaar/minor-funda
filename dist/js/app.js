@@ -194,6 +194,7 @@ var Controller = function () {
 
 			var $imageContainer = document.querySelector('#image');
 			var $closeImage = document.querySelector('#image a');
+
 			$closeImage.addEventListener('click', function () {
 				_this.app.view.showElement($imageContainer, false);
 			});
@@ -224,7 +225,9 @@ var Controller = function () {
 						app.view.renderList();
 						app.view.activatePage('#results');
 						app.view.showElement(document.querySelector('#image'), false);
-						app.store.lastLocation = hash;
+						if (hash !== app.store.lastLocation) {
+							app.store.lastLocation = hash;
+						}
 					}
 				}
 			});
