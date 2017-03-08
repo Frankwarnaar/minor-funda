@@ -7,23 +7,29 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-
-	a,
-	img {
-		z-index: 2;
-	}
+	z-index: 2;
 
 	a {
 		padding: 0 1rem;
 		float: right;
 		background: @color-primary;
 		color: @color-lightest;
+		text-decoration: none;
+
+		&:hover {
+			background: @color-lightest;
+			color: @color-primary;
+		}
 	}
 
 	img {
 		max-height: 90vh;
 		max-width: 90vw;
-		width: 100vw;
+
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 
 	&:after {
@@ -37,6 +43,6 @@
 		left: 0;
 		content: '';
 		z-index: -1;
-		background: rgba(0,0,0,.5);
+		background: rgba(0,0,0,.8);
 	}
 }

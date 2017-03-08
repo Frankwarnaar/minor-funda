@@ -108,9 +108,12 @@ class View {
 	}
 
 	renderImage(url) {
+		const $body = document.querySelector('body');
 		const $imageContainer = document.querySelector('#image');
 		const $closeButton = document.querySelector('#image a');
 		const $lastImg = document.querySelector('#image img');
+
+		$body.classList.add('no-scroll');
 
 		if ($lastImg) {
 			$imageContainer.removeChild($lastImg);
@@ -122,18 +125,6 @@ class View {
 
 		$imageContainer.insertAdjacentHTML('beforeend', `<img src="${url}"/>`);
 		this.showElement($imageContainer, true);
-	}
-
-	showElement($el, show) {
-		if (show) {
-			$el.classList.remove('hidden');
-		} else{
-			$el.classList.add('hidden');
-		}
-	}
-
-	clearView($el) {
-		$el.innerHTML = '';
 	}
 
 	// Make the current page visible and all the other invisible
@@ -154,6 +145,18 @@ class View {
 
 		this.showElement($loader, show);
 		this.showElement($description, content);
+	}
+
+	showElement($el, show) {
+		if (show) {
+			$el.classList.remove('hidden');
+		} else{
+			$el.classList.add('hidden');
+		}
+	}
+
+	clearView($el) {
+		$el.innerHTML = '';
 	}
 }
 

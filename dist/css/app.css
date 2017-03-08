@@ -290,9 +290,6 @@ a span {
   right: 0;
   bottom: 0;
   left: 0;
-}
-.image-viewer a,
-.image-viewer img {
   z-index: 2;
 }
 .image-viewer a {
@@ -300,11 +297,19 @@ a span {
   float: right;
   background: #F7A100;
   color: #fff;
+  text-decoration: none;
+}
+.image-viewer a:hover {
+  background: #fff;
+  color: #F7A100;
 }
 .image-viewer img {
   max-height: 90vh;
   max-width: 90vw;
-  width: 100vw;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .image-viewer:after {
   width: 100%;
@@ -316,7 +321,7 @@ a span {
   left: 0;
   content: '';
   z-index: -1;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
 }
 ol {
   padding: 0;

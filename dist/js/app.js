@@ -473,9 +473,12 @@ var View = function () {
 	}, {
 		key: 'renderImage',
 		value: function renderImage(url) {
+			var $body = document.querySelector('body');
 			var $imageContainer = document.querySelector('#image');
 			var $closeButton = document.querySelector('#image a');
 			var $lastImg = document.querySelector('#image img');
+
+			$body.classList.add('no-scroll');
 
 			if ($lastImg) {
 				$imageContainer.removeChild($lastImg);
@@ -487,20 +490,6 @@ var View = function () {
 
 			$imageContainer.insertAdjacentHTML('beforeend', '<img src="' + url + '"/>');
 			this.showElement($imageContainer, true);
-		}
-	}, {
-		key: 'showElement',
-		value: function showElement($el, show) {
-			if (show) {
-				$el.classList.remove('hidden');
-			} else {
-				$el.classList.add('hidden');
-			}
-		}
-	}, {
-		key: 'clearView',
-		value: function clearView($el) {
-			$el.innerHTML = '';
 		}
 
 		// Make the current page visible and all the other invisible
@@ -527,6 +516,20 @@ var View = function () {
 
 			this.showElement($loader, show);
 			this.showElement($description, content);
+		}
+	}, {
+		key: 'showElement',
+		value: function showElement($el, show) {
+			if (show) {
+				$el.classList.remove('hidden');
+			} else {
+				$el.classList.add('hidden');
+			}
+		}
+	}, {
+		key: 'clearView',
+		value: function clearView($el) {
+			$el.innerHTML = '';
 		}
 	}]);
 
