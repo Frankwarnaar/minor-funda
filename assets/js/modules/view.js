@@ -44,10 +44,10 @@ class View {
 				<li data-id="${object.Id}">
 				<img src="${object.FotoLarge}" alt="${object.Adres}">
 				<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
+				<span><strong>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : ''}${object.Huurprijs ? object.Huurprijs.toLocaleString('currency') + ' p/m' : ''}</strong></span>
 				${object.Woonoppervlakte ? '<span>' + object.Woonoppervlakte + 'm<sup>2</sup></span>' : ''}
 				</li>
 				`;
-				// <span><strong>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</strong></span>
 
 				$resultsList.insertAdjacentHTML('beforeend', $listItem);
 			});
