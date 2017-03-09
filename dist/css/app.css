@@ -217,7 +217,6 @@ a span {
 .loader-container {
   padding: 0;
   margin: 0;
-  height: calc(100% - 3rem);
   width: 100%;
   flex-direction: column;
   justify-content: center;
@@ -227,7 +226,7 @@ a span {
   display: flex;
 }
 .loader-container .loader {
-  margin: 0 auto;
+  margin: 6rem auto 0;
 }
 .image-viewer {
   padding: 0;

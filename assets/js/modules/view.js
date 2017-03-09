@@ -3,14 +3,25 @@
 class View {
 	constructor(app) {
 		this.app = app;
+
+		this.$ = {
+			results: document.querySelector('.results'),
+			resultsList: document.querySelector('#results-list'),
+			noResults: document.querySelector('.results p'),
+			details: document.querySelector('#details'),
+			imageContainer: document.querySelector('#image'),
+			body: document.querySelector('body'),
+			closeButton: document.querySelector('#image a'),
+			lastImg: document.querySelector('#image img'),
+			pages: Array.from(document.querySelectorAll('[data-page]')),
+			loader:  document.querySelector('.loader-container'),
+			description:  document.querySelector('.loader-container p')
+		};
 	}
 
 	renderObjects() {
-		const $results = document.querySelector('.results');
-		const $resultsList = document.querySelector('#results-list');
-
 		// Check if there aren't any objects rendered yet
-		if ($resultsList.innerHTML.length === 0) {
+		if (this.$.resultsList.innerHTML.length === 0) {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby()
 			.then(objects => {
@@ -19,22 +30,17 @@ class View {
 			.catch(err => {
 				console.log(err);
 
-				$results.insertAdjacentHTML('beforeend', 'Er is iets mis gegaan bij het ophalen van huizen in uw buurt. Probeer het later nog eens.');
+				this.$.results.insertAdjacentHTML('beforeend', 'Er is iets mis gegaan bij het ophalen van huizen in uw buurt. Probeer het later nog eens.');
 
-				this.showElement($results, true);
+				this.showElement(this.$.results, true);
 				this.showLoader(false);
 			});
 		}
 	}
 
 	renderList(objects) {
-		console.log(objects);
-		const $results = document.querySelector('.results');
-		const $resultsList = document.querySelector('#results-list');
-		const $noResults = document.querySelector('.results p');
-
-		this.clearView($resultsList);
-		this.showElement($noResults, false);
+		this.clearView(this.$.resultsList);
+		this.showElement(this.$.noResults, false);
 
 		if (objects.length > 0) {
 			this.app.store.objects = objects;
@@ -49,25 +55,22 @@ class View {
 				</li>
 				`;
 
-				$resultsList.insertAdjacentHTML('beforeend', $listItem);
+				this.$.resultsList.insertAdjacentHTML('beforeend', $listItem);
 			});
 
 		} else {
-			this.showElement($noResults, true);
+			this.showElement(this.$.noResults, true);
 		}
-		this.showElement($results, true);
+		this.showElement(this.$.results, true);
 		this.showLoader(false);
 	}
 
 	renderObject(id, type) {
-		const $details = document.querySelector('#details');
-		const $imageContainer = document.querySelector('#image');
-
-		this.app.view.showElement($imageContainer, false);
+		this.app.view.showElement(this.$.imageContainer, false);
 
 		// Check if the object isn't already rendered.
 		if (this.app.store.lastDetailPage !== id) {
-			this.clearView($details);
+			this.clearView(this.$.details);
 			this.showLoader(true, false);
 			// Get details
 			this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
@@ -138,10 +141,10 @@ class View {
 				</section>
 				`;
 
-				$details.insertAdjacentHTML('beforeend', content);
+				this.$.details.insertAdjacentHTML('beforeend', content);
 
 				this.showLoader(false);
-				this.showElement($details, true);
+				this.showElement(this.$.details, true);
 			})
 			.catch(err => {
 				console.log(err);
@@ -150,23 +153,19 @@ class View {
 	}
 
 	renderImage(url) {
-		const $body = document.querySelector('body');
-		const $imageContainer = document.querySelector('#image');
-		const $closeButton = document.querySelector('#image a');
-		const $lastImg = document.querySelector('#image img');
 
-		$body.classList.add('no-scroll');
+		this.$.body.classList.add('no-scroll');
 
-		if ($lastImg) {
-			$imageContainer.removeChild($lastImg);
+		if (this.$.lastImg) {
+			this.$.imageContainer.removeChild(this.$.lastImg);
 		}
 
 		if (this.app.store.lastLocation) {
-			$closeButton.setAttribute('href', this.app.store.lastLocation);
+			this.$.closeButton.setAttribute('href', this.app.store.lastLocation);
 		}
 
-		$imageContainer.insertAdjacentHTML('beforeend', `<img src="${url}"/>`);
-		this.showElement($imageContainer, true);
+		this.$.imageContainer.insertAdjacentHTML('beforeend', `<img src="${url}"/>`);
+		this.showElement(this.$.imageContainer, true);
 	}
 
 	reoderObjects(sortOption) {
@@ -183,8 +182,7 @@ class View {
 
 	// Make the current page visible and all the other invisible
 	activatePage(route) {
-		const $pages = Array.from(document.querySelectorAll('[data-page]'));
-		$pages.forEach($page => {
+		this.$.pages.forEach($page => {
 			if (`#${$page.getAttribute('id')}` === route) {
 				this.showElement($page, true);
 			} else {
@@ -194,11 +192,8 @@ class View {
 	}
 
 	showLoader(show, content) {
-		const $loader =  document.querySelector('.loader-container');
-		const $description =  document.querySelector('.loader-container p');
-
-		this.showElement($loader, show);
-		this.showElement($description, content);
+		this.showElement(this.$.loader, show);
+		this.showElement(this.$.description, content);
 	}
 
 	showElement($el, show) {

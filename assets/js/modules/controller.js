@@ -69,11 +69,8 @@ class Controller {
 					app.view.renderObjects();
 					app.view.activatePage(`#results`);
 					app.view.showElement(document.querySelector('#image'), false);
-					if (hash !== app.store.lastLocation) {
-						app.store.lastLocation = hash;
-					}
+					app.store.lastLocation = hash;
 				}
-
 			}
 		});
 	}
