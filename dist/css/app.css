@@ -376,9 +376,11 @@ section {
     margin-right: 0;
   }
 }
-.results-list li:hover {
-  box-shadow: 0 0.2em 0.3em 0 rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
+@media screen and (min-width: 48.01rem ) {
+  .results-list li:hover {
+    box-shadow: 0 0.2em 0.3em 0 rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+  }
 }
 .object {
   flex-direction: column;
@@ -388,13 +390,13 @@ section {
 }
 .object h2 {
   color: #6a6a6a;
-  font-size: calc(calc(.8em + .3vw) * (1.12));
+  font-size: calc(calc(.8em + .3vw) * (1.12 * 1.12));
   font-weight: 400;
 }
 .object section {
   margin: 0;
 }
-@media screen and (min-width: 48.01rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object section {
     margin: 1rem;
   }
@@ -402,17 +404,17 @@ section {
 .object > section {
   width: 100%;
 }
-@media screen and (min-width: 48.01rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object > section {
     width: 50%;
   }
 }
-@media screen and (min-width: 48.01rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object > section:nth-child(2) {
     max-width: 40em;
   }
 }
-@media screen and (min-width: 48.01rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object {
     flex-direction: row;
   }
@@ -436,30 +438,34 @@ section {
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
-@media screen and (max-width: 48rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object__images section {
-    display: flex;
+    flex-wrap: wrap;
   }
 }
 .object__images a {
-  display: block;
-  width: calc(30% - .667rem);
   margin: 0 .1rem;
+  width: 30%;
   box-sizing: border-box;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-@media screen and (min-width: 48.01rem ) {
+.object__images a img {
+  width: 100%;
+}
+@media screen and (min-width: 62.01rem ) {
   .object__images a {
     margin: 0 .1rem;
-    width: calc(20% - .8rem);
-    flex-shrink: auto;
+    width: calc(20% - .16rem);
   }
 }
 .object__images a:hover {
   box-shadow: 0 0.2em 0.3em 0 rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
 }
-@media screen and (max-width: 48rem ) {
+@media screen and (max-width: 62rem ) {
   .object__images a:first-child {
     margin-left: 0;
   }
@@ -467,7 +473,7 @@ section {
     margin-left: 0;
   }
 }
-@media screen and (min-width: 48.01rem ) {
+@media screen and (min-width: 62.01rem ) {
   .object__images a:nth-child(5n - 4) {
     margin-left: 0;
   }

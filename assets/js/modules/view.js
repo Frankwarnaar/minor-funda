@@ -58,7 +58,6 @@ class View {
 			// Get details
 			this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
-				console.log(details);
 				this.app.store.lastDetailPage = id;
 
 				// Get all the medium images of an object
