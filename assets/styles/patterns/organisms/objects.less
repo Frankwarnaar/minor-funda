@@ -1,6 +1,16 @@
 .object {
 	flex-direction: column;
 
+	h1 {
+		margin-bottom: 0;
+	}
+
+	h2 {
+		color: @color-gray-concrete;
+		font-size: @font-size-md;
+		font-weight: @font-weight-regular;
+	}
+
 	section {
 		margin: 0;
 
@@ -44,7 +54,8 @@
 	}
 
 	a:hover {
-		opacity: .8;
+		box-shadow: 0 .2em .3em 0 rgba(0,0,0,.1);
+		transform: scale(1.05);
 	}
 
 	@media @q-md-max {

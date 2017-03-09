@@ -20,7 +20,7 @@ class View {
 						const $listItem = `
 						<li>
 						<img src="${object.FotoLarge}" alt="${object.Adres}">
-						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h3>${object.Adres}</h3></a>
+						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
 						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
 						</li>
 						`;
@@ -58,6 +58,7 @@ class View {
 			// Get details
 			this.app.fetchRequest(`${this.app.config.funda.baseUrls.objects}/${this.app.config.funda.key}/${type}/${id}`)
 			.then(details => {
+				console.log(details);
 				this.app.store.lastDetailPage = id;
 
 				// Get all the medium images of an object
@@ -93,7 +94,7 @@ class View {
 					if (item[0] === '-') {
 						return `${buffer} <li>${item.substr(1, item.length - 1)}</li>`;
 					} if (item[item.length - 2] === ':') {
-						return `${buffer} <h2>${item}</h2>`;
+						return `${buffer} <h3>${item}</h3>`;
 					} else {
 						return `${buffer} <p>${item}</p>`;
 					}
@@ -109,6 +110,15 @@ class View {
 				</section>
 				<section>
 					<h1>${details.Adres}</h1>
+					<h2>${details.Postcode} ${details.Plaats}</h2>
+					<dl>
+						<dt>Prijs:</dt><dd><strong>€
+						${details.Koopprijs ? details.Koopprijs : details.Huurprijs}
+						</strong></dd>
+						<dt>Aantal kamers:</dt><dd>${details.AantalKamers}</dd>
+						<dt>Aantal badkamers:</dt><dd>${details.AantalBadkamers}</dd>
+						<dt>Bouwjaar:</dt><dd>${details.Bouwjaar}</dd>
+					</dl>
 					<p>${description}</p>
 				</section>
 				`;

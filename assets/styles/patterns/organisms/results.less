@@ -17,6 +17,8 @@
 		box-sizing: border-box;
 		position: relative;
 
+		transition: @transition-fastest;
+
 		a {
 			text-decoration: none;
 			display: block;
@@ -42,7 +44,6 @@
 		@media @q-md-min {
 			margin: .5rem;
 			width: ~"calc(33.33% - .667rem)";
-			border: 1px solid @color-lightest;
 			border-radius: 2px;
 
 			&:nth-child(3n - 2) {
@@ -55,7 +56,8 @@
 		}
 
 		&:hover {
-			background: @color-lightest;
+			box-shadow: 0 .2em .3em 0 rgba(0,0,0,.1);
+			transform: scale(1.05);
 		}
 	}
 }
