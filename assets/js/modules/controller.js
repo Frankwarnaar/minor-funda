@@ -11,12 +11,22 @@ class Controller {
 		this.router();
 		this.imageViewer();
 		this.sortObjects();
+		this.filterObjects();
 	}
 
 	sortObjects() {
 		const $sortOption = document.querySelector('#sort');
 		$sortOption.addEventListener('change', () => {
 			this.app.view.reoderObjects($sortOption.value);
+		});
+	}
+
+	filterObjects() {
+		const $types = document.querySelectorAll('[name="type"]');
+		$types.forEach($type => {
+			$type.addEventListener('change', (e) => {
+				console.log(sortOption);
+			});
 		});
 	}
 
