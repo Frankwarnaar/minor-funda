@@ -215,12 +215,13 @@ a span {
   }
 }
 .loader-container {
-  padding: 0;
+  padding: 0 1rem;
   margin: 0;
   width: 100%;
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  box-sizing: border-box;
 }
 .loader-container:not(.hidden) {
   display: flex;
