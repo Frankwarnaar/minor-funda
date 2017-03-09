@@ -377,7 +377,7 @@ section {
 @media screen and (min-width: 48.01rem ) {
   .results ul li {
     margin: .5rem;
-    width: calc(33.33% - .84rem);
+    width: calc(33.33% - 1rem);
     border-radius: 2px;
   }
   .results ul li:nth-child(3n - 2) {
