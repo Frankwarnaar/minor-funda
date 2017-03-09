@@ -12,12 +12,18 @@
 	}
 
 	li {
-		padding: 1rem;
+		padding: 1rem 0 .5rem;
 		width: 100%;
 		box-sizing: border-box;
 		position: relative;
+		border-bottom: 1px solid @color-gray-clouds;
 
 		transition: @transition-fastest;
+
+		@media @q-md-min {
+			border: none;
+			padding: 1rem;
+		}
 
 		a {
 			text-decoration: none;
@@ -33,12 +39,17 @@
 			left: 0;
 		}
 
-		h3 {
+		h2 {
 			margin: 0;
 		}
 
 		img {
 			width: 100%;
+		}
+
+		span {
+			margin: .325em;
+			display: block;
 		}
 
 		@media @q-md-min {

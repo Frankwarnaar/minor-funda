@@ -22,7 +22,8 @@ class View {
 						<li data-id="${object.Id}">
 						<img src="${object.FotoLarge}" alt="${object.Adres}">
 						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
-						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
+						<span><strong>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</strong></span>
+						${object.Woonoppervlakte ? '<span>' + object.Woonoppervlakte + 'm<sup>2</sup></span>' : ''}
 						</li>
 						`;
 
@@ -100,6 +101,7 @@ class View {
 					}
 				});
 
+
 				// Set content
 				const content = `
 				<section class="object__images">
@@ -118,6 +120,7 @@ class View {
 						<dt>Aantal kamers:</dt><dd>${details.AantalKamers}</dd>
 						<dt>Aantal badkamers:</dt><dd>${details.AantalBadkamers}</dd>
 						<dt>Bouwjaar:</dt><dd>${details.Bouwjaar}</dd>
+						<dt>Oppervlakte:</dt><dd>${details.WoonOppervlakte} m<sup>2</sup></dd>
 					</dl>
 					<p>${description}</p>
 				</section>
@@ -155,11 +158,7 @@ class View {
 	}
 
 	reoderObjects(sortOption) {
-		console.log(sortOption);
-		console.log(this.app.store.objects);
 		this.app.store.objects = this.app.utils.sortArray(this.app.store.objects, sortOption);
-		console.log(this.app.store.objects);
-
 		this.app.store.objects.map((object, i) => {
 			document.querySelector(`[data-id="${object.Id}"]`).style.order = i;
 		});

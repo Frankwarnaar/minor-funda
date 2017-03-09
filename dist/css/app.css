@@ -313,7 +313,7 @@ dl dd {
   transition: 0.1s ease-in-out;
 }
 .navigation a:hover {
-  filter: hue-rotate(50deg);
+  filter: brightness(120%);
 }
 .navigation a:focus {
   border-color: #fff;
@@ -339,11 +339,18 @@ section {
   }
 }
 .results ul li {
-  padding: 1rem;
+  padding: 1rem 0 .5rem;
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  border-bottom: 1px solid #EDEDED;
   transition: 0.1s ease-in-out;
+}
+@media screen and (min-width: 48.01rem ) {
+  .results ul li {
+    border: none;
+    padding: 1rem;
+  }
 }
 .results ul li a {
   text-decoration: none;
@@ -357,11 +364,15 @@ section {
   bottom: 0;
   left: 0;
 }
-.results ul li h3 {
+.results ul li h2 {
   margin: 0;
 }
 .results ul li img {
   width: 100%;
+}
+.results ul li span {
+  margin: .325em;
+  display: block;
 }
 @media screen and (min-width: 48.01rem ) {
   .results ul li {
