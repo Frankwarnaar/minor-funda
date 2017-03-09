@@ -40,6 +40,7 @@ class Store {
 						let objects = [].concat.apply([], streets);
 						objects = [...new Set(objects)];
 
+						this.objects = objects;
 						resolve(objects);
 					});
 				});

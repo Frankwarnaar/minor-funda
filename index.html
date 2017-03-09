@@ -19,12 +19,23 @@
 		<section class="results hidden" id="results" data-page>
 			<h1>Huizen bij u in de buurt</h1>
 			<form>
-				<h2>Sorteer op:</h2>
-				<select id="sort">
-					<option disabled selected value>Selecteer een optie</option>
-					<option value="Koopprijs">Prijs</options>
-					<option value="Woonoppervlakte">Vierkante meters</options>
-				</select>
+				<section>
+					<h2>Sorteer op:</h2>
+					<select id="sort">
+						<option disabled selected value>Selecteer een optie</option>
+						<option value="Koopprijs">Prijs</options>
+						<option value="Woonoppervlakte">Vierkante meters</options>
+					</select>
+				</section>
+
+				<section>
+					<h2>Filter op:</h2>
+					<input type="checkbox" id="koop" checked value="koop"/>
+					<label for="koop">Koop</label>
+
+					<input type="checkbox" checked id="huur" value="huur"/>
+					<label for="huur">Huur</label>
+				</section>
 			</form>
 			<ul id="results-list"></ul>
 		</section>
