@@ -38,7 +38,7 @@ class View {
 				console.log(err);
 
 				$results.insertAdjacentHTML('beforeend', 'Er is iets mis gegaan bij het ophalen van huizen in uw buurt. Probeer het later nog eens.');
-				
+
 				this.showElement($results, true);
 				this.showLoader(false);
 			});
@@ -64,12 +64,20 @@ class View {
 				let gallery = '';
 				details.Media.map(picture => {
 					const bigPic = picture.MediaItems.filter(source => {
-						return source.Url.includes('grotere');
+						if (source.Url.includes('middel')) {
+							return source.Url;
+						} else if (source.Url.includes('groot')) {
+							return source.Url;
+						} else if (source.Url.includes('grotere')) {
+							return source.Url;
+						}
 					});
 
 					picture.MediaItems.map(source => {
 						if (source.Url.includes('middel')) {
-							gallery += `<a href="#image/${bigPic[0].Url}"><img src="${source.Url}" alt="${details.Adres}"></a>`;
+							if (bigPic.length > 0) {
+								gallery += `<a href="#image/${bigPic[bigPic.length - 1].Url}"><img src="${source.Url}" alt="${details.Adres}"></a>`;
+							}
 						}
 					});
 				});
