@@ -23,29 +23,3 @@ textarea {
 		outline: none;
 	}
 }
-
-.input-label-group {
-	.flex;
-	.flex--row;
-	padding: 1rem 0 .5rem;
-
-	input {
-		float: left;
-		padding: 0;
-		margin-right: .325rem;
-	}
-
-	label {
-		padding: 0;
-		cursor: pointer;
-	}
-
-	input + label {
-
-		transition: border-bottom @transition-fastest;
-	}
-
-	input:checked + label {
-		color: @color-primary;
-	}
-}
