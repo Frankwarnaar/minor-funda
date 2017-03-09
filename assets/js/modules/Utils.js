@@ -9,9 +9,18 @@ class Utils {
 	}
 
 	// Remove item from array if it contains a subtring
-	filterArray(array, substring) {
+	filterArray(array, values) {
 		return array.filter(item => {
-			return (!item.includes(substring));
+			if (values.includes('koop') && item.Koopprijs !== null) {
+				console.log('true');
+				return true;
+			}
+
+			if (values.includes('huur') && item.Huurprijs !== null) {
+				return true;
+			}
+
+			return false;
 		});
 	}
 

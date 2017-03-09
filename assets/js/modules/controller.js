@@ -23,9 +23,16 @@ class Controller {
 
 	filterObjects() {
 		const $types = document.querySelectorAll('[name="type"]');
+
 		$types.forEach($type => {
 			$type.addEventListener('change', (e) => {
-				console.log(sortOption);
+				const $checkedTypes = document.querySelectorAll('[name="type"]:checked');
+				const checkedTypes = [];
+				$checkedTypes.forEach($type => {
+					checkedTypes.push($type.value);
+				});
+
+				this.app.view.filterObjects(checkedTypes);
 			});
 		});
 	}

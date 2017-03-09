@@ -164,6 +164,11 @@ class View {
 		});
 	}
 
+	filterObjects(checkedTypes) {
+		this.app.store.filteredObjects = this.app.utils.filterArray(this.app.store.objects, checkedTypes);
+		console.log(this.app.store.filteredObjects);
+	}
+
 	// Make the current page visible and all the other invisible
 	activatePage(route) {
 		const $pages = Array.from(document.querySelectorAll('[data-page]'));
