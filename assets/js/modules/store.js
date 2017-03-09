@@ -10,38 +10,27 @@ class Store {
 			// Get coordinates of users location
 			this.app.getCoords()
 				.then(coords => {
-					// Get streets nearby location
-					const getStreets = this.app.handleRequest('GET', `${this.app.config.geoNames.baseUrl}&lat=${coords.latitude}&lng=${coords.longitude}&username=${this.app.config.geoNames.userName}`);
-					// Get city matching users location
-					const getCity = this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`);
+					// Get street of location
+					this.app.handleRequest('GET', `${this.app.config.google.baseUrls.maps}?latlng=${coords.latitude},${coords.longitude}&key=${this.app.config.google.key}`)
+				.then(location => {
+					const locationComponents = location.results[0].address_components;
 
-					// Fire api requests parallel
-					Promise.all([getStreets, getCity])
-				.then(results => {
-					let streets = results[0];
-					let city = results[1];
+					let street = locationComponents.filter(component => {
+						return component.types.includes('route');
+					})[0];
+					street = street.long_name;
 
-					// Clean the streetnames returned by geoNames API
-					streets = streets.streetSegment.map(street => {
-						return street.name;
-					});
-					streets = [...new Set(streets)];
-					streets = this.app.utils.filterArray(streets, '0');
+					let city = locationComponents.filter(component => {
+						return component.types.includes('locality');
+					})[0];
+					city = city.long_name;
 
-					// Cleanup the city return by Google API
-					city = city.results[0];
-					city = this.app.utils.getStreet(city.address_components);
+					const requests = [
+						this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}/+1km&page=1&pagesize=25`),
+						this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=huur&zo=/${city}/${street}/+1km&page=1&pagesize=25`),
+					];
 
-					// Get all the objects on the streets nearby
-					const objectReqs = [];
-					streets.map(street => {
-						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=koop&zo=/${city}/${street}&page=1&pagesize=25`));
-
-						objectReqs.push(this.app.fetchRequest(`${this.app.config.funda.baseUrls.search}/${this.app.config.funda.key}?type=huur&zo=/${city}/${street}&page=1&pagesize=25`));
-					});
-
-					// Fire all the API calls parallel
-					Promise.all(objectReqs)
+					Promise.all(requests)
 				.then(results => {
 						const streets = results.map(street => {
 							return street.Objects;
