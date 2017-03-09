@@ -66,7 +66,7 @@ class Controller {
 					const imageUrl = hash.substr(7, hash.length - 1);
 					app.view.renderImage(imageUrl);
 				} else {
-					app.view.renderList();
+					app.view.renderObjects();
 					app.view.activatePage(`#results`);
 					app.view.showElement(document.querySelector('#image'), false);
 					if (hash !== app.store.lastLocation) {

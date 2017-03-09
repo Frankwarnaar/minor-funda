@@ -5,7 +5,7 @@ class View {
 		this.app = app;
 	}
 
-	renderList() {
+	renderObjects() {
 		const $results = document.querySelector('.results');
 		const $resultsList = document.querySelector('#results-list');
 
@@ -14,27 +14,7 @@ class View {
 			this.showLoader(true, true);
 			this.app.store.getObjectsNearby()
 			.then(objects => {
-				if (objects.length > 0) {
-					this.app.store.objects = objects;
-					// Render all the objects
-					objects.map(object => {
-						const $listItem = `
-						<li data-id="${object.Id}">
-						<img src="${object.FotoLarge}" alt="${object.Adres}">
-						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
-						<span><strong>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</strong></span>
-						${object.Woonoppervlakte ? '<span>' + object.Woonoppervlakte + 'm<sup>2</sup></span>' : ''}
-						</li>
-						`;
-
-						$resultsList.insertAdjacentHTML('beforeend', $listItem);
-					});
-
-				} else {
-					$results.insertAdjacentHTML('beforeend', 'Er zijn geen resultaten gevonden in uw buurt.');
-				}
-				this.showElement($results, true);
-				this.showLoader(false);
+				this.renderList(objects);
 			})
 			.catch(err => {
 				console.log(err);
@@ -45,6 +25,38 @@ class View {
 				this.showLoader(false);
 			});
 		}
+	}
+
+	renderList(objects) {
+		console.log(objects);
+		const $results = document.querySelector('.results');
+		const $resultsList = document.querySelector('#results-list');
+		const $noResults = document.querySelector('.results p');
+
+		this.clearView($resultsList);
+		this.showElement($noResults, false);
+
+		if (objects.length > 0) {
+			this.app.store.objects = objects;
+			// Render all the objects
+			objects.map(object => {
+				const $listItem = `
+				<li data-id="${object.Id}">
+				<img src="${object.FotoLarge}" alt="${object.Adres}">
+				<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
+				${object.Woonoppervlakte ? '<span>' + object.Woonoppervlakte + 'm<sup>2</sup></span>' : ''}
+				</li>
+				`;
+				// <span><strong>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</strong></span>
+
+				$resultsList.insertAdjacentHTML('beforeend', $listItem);
+			});
+
+		} else {
+			this.showElement($noResults, true);
+		}
+		this.showElement($results, true);
+		this.showLoader(false);
 	}
 
 	renderObject(id, type) {
@@ -166,7 +178,7 @@ class View {
 
 	filterObjects(checkedTypes) {
 		this.app.store.filteredObjects = this.app.utils.filterArray(this.app.store.objects, checkedTypes);
-		console.log(this.app.store.filteredObjects);
+		this.renderList(this.app.store.filteredObjects);
 	}
 
 	// Make the current page visible and all the other invisible

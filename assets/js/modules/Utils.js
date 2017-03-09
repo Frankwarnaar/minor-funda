@@ -12,7 +12,6 @@ class Utils {
 	filterArray(array, values) {
 		return array.filter(item => {
 			if (values.includes('koop') && item.Koopprijs !== null) {
-				console.log('true');
 				return true;
 			}
 
