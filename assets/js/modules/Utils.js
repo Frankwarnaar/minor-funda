@@ -14,6 +14,16 @@ class Utils {
 			return (!item.includes(substring));
 		});
 	}
+
+	sortArray(array, key) {
+		return array.sort((a, b) => {
+			if (typeof(a[key]) === 'string') {
+				return a[key].localeCompare(b[key]);
+			} else {
+				return a[key] - b[key];
+			}
+		});
+	}
 }
 
 export default Utils;

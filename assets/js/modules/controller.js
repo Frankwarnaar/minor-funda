@@ -10,6 +10,14 @@ class Controller {
 	init() {
 		this.router();
 		this.imageViewer();
+		this.sortObjects();
+	}
+
+	sortObjects() {
+		const $sortOption = document.querySelector('#sort');
+		$sortOption.addEventListener('change', () => {
+			this.app.view.reoderObjects($sortOption.value);
+		});
 	}
 
 	imageViewer() {

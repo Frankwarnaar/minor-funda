@@ -325,7 +325,7 @@ dl dd {
 section {
   margin: 1rem;
 }
-.results-list {
+.results ul {
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -334,22 +334,22 @@ section {
   list-style-type: none;
 }
 @media screen and (min-width: 48.01rem ) {
-  .results-list {
+  .results ul {
     flex-direction: row;
   }
 }
-.results-list li {
+.results ul li {
   padding: 1rem;
   width: 100%;
   box-sizing: border-box;
   position: relative;
   transition: 0.1s ease-in-out;
 }
-.results-list li a {
+.results ul li a {
   text-decoration: none;
   display: block;
 }
-.results-list li a:after {
+.results ul li a:after {
   content: '';
   position: absolute;
   top: 0;
@@ -357,30 +357,34 @@ section {
   bottom: 0;
   left: 0;
 }
-.results-list li h3 {
+.results ul li h3 {
   margin: 0;
 }
-.results-list li img {
+.results ul li img {
   width: 100%;
 }
 @media screen and (min-width: 48.01rem ) {
-  .results-list li {
+  .results ul li {
     margin: .5rem;
-    width: calc(33.33% - .667rem);
+    width: calc(33.33% - .84rem);
     border-radius: 2px;
   }
-  .results-list li:nth-child(3n - 2) {
+  .results ul li:nth-child(3n - 2) {
     margin-left: 0;
   }
-  .results-list li:nth-child(3n) {
+  .results ul li:nth-child(3n) {
     margin-right: 0;
   }
 }
 @media screen and (min-width: 48.01rem ) {
-  .results-list li:hover {
+  .results ul li:hover {
     box-shadow: 0 0.2em 0.3em 0 rgba(0, 0, 0, 0.1);
     transform: scale(1.05);
   }
+}
+.results section {
+  padding: 0;
+  margin: 0;
 }
 .object {
   flex-direction: column;

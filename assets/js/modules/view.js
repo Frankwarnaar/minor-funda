@@ -15,10 +15,11 @@ class View {
 			this.app.store.getObjectsNearby()
 			.then(objects => {
 				if (objects.length > 0) {
+					this.app.store.objects = objects;
 					// Render all the objects
 					objects.map(object => {
 						const $listItem = `
-						<li>
+						<li data-id="${object.Id}">
 						<img src="${object.FotoLarge}" alt="${object.Adres}">
 						<a href="#details/${object.Id}/${object.Koopprijs ? 'koop' : 'huur'}"><h2>${object.Adres}</h2></a>
 						<span>€${object.Koopprijs ? object.Koopprijs.toLocaleString('currency') : object.Huurprijs.toLocaleString('currency') + ' p/m'}</span>
@@ -151,6 +152,17 @@ class View {
 
 		$imageContainer.insertAdjacentHTML('beforeend', `<img src="${url}"/>`);
 		this.showElement($imageContainer, true);
+	}
+
+	reoderObjects(sortOption) {
+		console.log(sortOption);
+		console.log(this.app.store.objects);
+		this.app.store.objects = this.app.utils.sortArray(this.app.store.objects, sortOption);
+		console.log(this.app.store.objects);
+
+		this.app.store.objects.map((object, i) => {
+			document.querySelector(`[data-id="${object.Id}"]`).style.order = i;
+		});
 	}
 
 	// Make the current page visible and all the other invisible

@@ -18,7 +18,15 @@
 	<main>
 		<section class="results hidden" id="results" data-page>
 			<h1>Huizen bij u in de buurt</h1>
-			<ul class="results-list" id="results-list"></ul>
+			<form>
+				<h2>Sorteer op:</h2>
+				<select id="sort">
+					<option disabled selected value>Selecteer een optie</option>
+					<option value="Koopprijs">Prijs</options>
+					<option value="Woonoppervlakte">Vierkante meters</options>
+				</select>
+			</form>
+			<ul id="results-list"></ul>
 		</section>
 		<section class="object hidden" id="details" data-page></section>
 		<section class="loader-container hidden">
