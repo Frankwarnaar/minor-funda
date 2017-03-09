@@ -5,13 +5,14 @@ const babelify  = require('babelify'),
 	browserify  = require('browserify'),
 	buffer      = require('vinyl-buffer'),
 	bundler     = require('gulp-es6-module-bundler'),
-	clean      = require('gulp-clean'),
+	clean       = require('gulp-clean'),
 	gulp        = require('gulp'),
 	gulpif      = require('gulp-if'),
 	gutil       = require('gulp-util'),
 	image       = require('gulp-image'),
 	less        = require('gulp-less'),
 	plumber     = require('gulp-plumber'),
+	sequence    = require('run-sequence'),
 	source      = require('vinyl-source-stream'),
 	sourcemaps  = require('gulp-sourcemaps'),
 	watch       = require('gulp-watch'),
@@ -22,7 +23,9 @@ const babelify  = require('babelify'),
    ============================================================ */
 
 gulp.task('default', ['watch', 'browser-sync']);
-gulp.task('build', ['clean', 'disable-debug', 'less', 'watchify', 'fonts', 'images']);
+gulp.task('build', () => {
+	sequence(['clean', 'disable-debug'], ['less', 'watchify', 'fonts', 'images']);
+});
 
 gulp.task('clean', () => {
 	return gulp.src(config.distPath, {read: false})
